@@ -3074,9 +3074,17 @@ threadSchema.statics.extendShopInfo = async function (props) {
     try {
       const { ipFinderService } = require('../services/ip/ipFinder.service');
       const ipInfo = await ipFinderService.getIpInfo(address);
-      userAddress = `${ipInfo.country || ''} ${ipInfo.region || ''} ${`${
-        ipInfo.city || ''
-      }`}`;
+      const ipInfoArr = [];
+      if (ipInfo.country) {
+        ipInfoArr.push(ipInfo.country);
+      }
+      if (ipInfo.region) {
+        ipInfoArr.push(ipInfo.region);
+      }
+      if (ipInfo.city) {
+        ipInfoArr.push(ipInfo.city);
+      }
+      userAddress = ipInfoArr.join('/');
     } catch (err) {
       //
     }
