@@ -13,7 +13,7 @@ class IPFinderService {
 
   // 获取详细地址信息
   getIpInfo = (ip) => {
-    const geo = this.cityLookup.get(ip);
+    const geo = ip ? this.cityLookup.get(ip) : null;
     let country = '';
     let region = '';
     let city = '';
@@ -68,12 +68,13 @@ class IPFinderService {
 
   // 保存ip并返回token
   saveIpAndGetToken = async (ip) => {
-    let ipData = await IPModel.find({ ip }, { _id: 1 });
+    let ipData = await IPModel.findOne({ ip }, { _id: 1 }).sort({ tlm: -1 });
     if (!ipData) {
       ipData = IPModel({
         _id: await SettingModel.newObjectId(),
         ip,
       });
+      await ipData.save();
     }
     return ipData._id;
   };
