@@ -90,7 +90,9 @@ router.get(
             },
           },
         ]);
-        const ipMap = await ipFinderService.getIPMapByIPs(r.map((a) => a._id));
+        const ipMap = await ipFinderService.getIPInfoMapByIPs(
+          r.map((a) => a._id),
+        );
         return {
           user: {
             uid: user.uid,

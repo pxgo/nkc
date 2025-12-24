@@ -24,7 +24,8 @@ export function getAndShowMomentIpDetail(momentId) {
 }
 
 export function showIpDetail(props) {
-  const { ip, country, region, city, googleMapUrl, gaodeMapUrl } = props;
+  const { ip, country, region, city, googleMapUrl, gaodeMapUrl, ip138Url } =
+    props;
   const location =
     [country, region, city].filter(Boolean).join(' · ') || '未知';
   const links = [
@@ -34,11 +35,14 @@ export function showIpDetail(props) {
     gaodeMapUrl
       ? `<a href="${gaodeMapUrl}" target="_blank" rel="noopener">高德地图</a>`
       : '',
+    ip138Url
+      ? `<a href="${ip138Url}" target="_blank" rel="noopener">IP138</a>`
+      : '',
   ]
     .filter(Boolean)
     .join(' | ');
 
-  const mapRow = links ? `<div><strong>地图：</strong>${links}</div>` : '';
+  const mapRow = links ? `<div><strong>其他：</strong>${links}</div>` : '';
 
   const html = `
     <div style="font-weight: normal; font-size: 14px; line-height: 1.8;">

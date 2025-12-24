@@ -37,7 +37,7 @@ router.get('/', OnlyUser(), async (ctx, next) => {
     .sort({ toc: -1 })
     .limit(20);
   data.loginRecordList = [];
-  const ipMap = await ipFinderService.getIPMapByIPs(
+  const ipMap = await ipFinderService.getIPInfoMapByIPs(
     loginRecordList.map((item) => item.ip),
   );
   for (const item of loginRecordList) {
