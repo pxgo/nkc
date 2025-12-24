@@ -1,25 +1,26 @@
 const maxmind = require('maxmind');
 const SettingModel = require('../../dataModels/SettingModel');
 const IPModel = require('../../dataModels/IPModel');
-const fs = require('fs');
 const path = require('path');
-const cityBuffer = fs.readFileSync(
-  path.resolve(__dirname, '../../geo/GeoLite2-City.mmdb'),
-);
 
 class IPFinderService {
-  cityLookup = new maxmind.Reader(cityBuffer);
+  cityLookup = null;
   localAddr = '未同步';
 
   // 获取详细地址信息
-  getIpInfo = (ip) => {
+  getIpInfo = async (ip) => {
+    if (this.cityLookup === null) {
+      this.cityLookup = await maxmind.open(
+        path.resolve(__dirname, '../../geo/GeoLite2-City.mmdb'),
+      );
+    }
     const geo = ip ? this.cityLookup.get(ip) : null;
     let country = '';
     let region = '';
     let city = '';
     let googleMapUrl = '';
     let gaodeMapUrl = '';
-
+    let ip138Url = '';
     if (geo) {
       if (geo.country && geo.country.names) {
         country = geo.country.names['zh-CN'] || geo.country.names.en || country;
@@ -40,9 +41,9 @@ class IPFinderService {
       if (geo.location && geo.location.latitude && geo.location.longitude) {
         googleMapUrl = `https://www.google.com/maps?q=${geo.location.latitude},${geo.location.longitude}`;
         gaodeMapUrl = `https://uri.amap.com/marker?position=${geo.location.longitude},${geo.location.latitude}`;
+        ip138Url = `https://site.ip138.com/${ip}`;
       }
     }
-
     return {
       ip,
       country,
@@ -50,13 +51,14 @@ class IPFinderService {
       city,
       googleMapUrl,
       gaodeMapUrl,
+      ip138Url,
     };
   };
 
   // 获取简略地址信息
   // 中国大陆返回省份，其他国家返回国家名
-  getIpAddressAbbr = (ip) => {
-    const { country, region, city } = this.getIpInfo(ip);
+  getIpAddressAbbr = async (ip) => {
+    const { country, region, city } = await this.getIpInfo(ip);
     if (country === '中国') {
       return `${region || city || country}`;
     } else if (!country) {
@@ -100,17 +102,19 @@ class IPFinderService {
   };
 
   // 同时获取多个ip对应的地址信息
-  getIPMapByIPs = async (ips) => {
+  getIPInfoMapByIPs = async (ips) => {
     const ipMap = new Map();
     for (const ip of ips) {
-      ipMap.set(ip, this.getIpInfo(ip));
+      ipMap.set(ip, await this.getIpInfo(ip));
     }
     return ipMap;
   };
 
   // 通过ip获取token
   getTokenByIP = async (ip) => {
-    const ipData = await IPModel.findOne({ ip: ip.trim() });
+    const ipData = await IPModel.findOne({
+      $or: [{ ip: ip.trim() }, { _id: ip.trim() }],
+    });
     return ipData ? ipData._id : '';
   };
 }

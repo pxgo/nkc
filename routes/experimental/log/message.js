@@ -84,7 +84,12 @@ router.get(
         }
         // ip筛选
         if (ip) {
-          q.ip = await ipFinderService.getTokenByIP(ip);
+          // TODO: 这里的IP非常迷，有时候是IP，有时候是token，需要统一。
+          q.ip = [ip];
+          const realIP = await ipFinderService.getTokenByIP(ip);
+          if (realIP) {
+            q.ip = [realIP, ip];
+          }
         }
         // 内容筛选
         if (keyword) {
@@ -115,7 +120,6 @@ router.get(
             filesId.push(m.c.fileId);
           }
         });
-        const ipMap = await ipFinderService.getIPMapByTokens(ipToken);
         const users = await db.UserModel.find({ uid: { $in: [...uids] } });
         const usersObj = {};
         users.map((u) => {
@@ -134,7 +138,7 @@ router.get(
             user: usersObj[s],
             targetUser: usersObj[r],
             toc: tc,
-            ip: ipMap.get(ip) || '',
+            ip: ip || '',
             withdrawn,
             c,
             content: '',
@@ -191,6 +195,7 @@ router.get(
         }
         data.paging = paging;
       } else {
+        //
       }
     }
     await next();
