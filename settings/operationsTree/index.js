@@ -98,6 +98,7 @@ const photo_small = require('./photo_small');
 const rm = require('./rm');
 const ro = require('./ro');
 const shopLogo = require('./shopLogo');
+const doi = require('./doi');
 const operationTree = {
   home: {
     GET: 'visitHome', // 首页
@@ -271,6 +272,7 @@ const operationTree = {
     apps, // 资源页
     wx: weChat,
     attachIcon,
+    doi, // DOI 相关
   },
 };
 module.exports = {
