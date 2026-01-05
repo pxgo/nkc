@@ -50,7 +50,7 @@ class DOIFinderService {
       method: 'GET',
     });
   }
-  // 指定doi完整链接或者doi号或者doi链接，获取所属机构信息
+  // 指定doi完整链接或者doi号或者doi链接，获取所属发信息
   async findMemberInfo(doi) {
     if (!doi || typeof doi !== 'string') {
       throw new Error('DOI must be a non-empty string');
@@ -66,6 +66,24 @@ class DOIFinderService {
 
     const apiBase = 'https://api.crossref.org';
     const url = `${apiBase}/prefixes/${prefix}?mailto=${encodeURIComponent(
+      doiConfig.email,
+    )}`;
+
+    return this.#postCore({
+      url,
+      method: 'GET',
+    });
+  }
+  // 指定doi获取赞助机构信息
+  async findFunderInfo(doi) {
+    if (!doi || typeof doi !== 'string') {
+      throw new Error('DOI must be a non-empty string');
+    }
+
+    const trimmed = doi.trim();
+    const doiNumber = trimmed.replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, '');
+
+    const url = `https://data.crossref.org/fundingdata/funder/${doiNumber}?mailto=${encodeURIComponent(
       doiConfig.email,
     )}`;
 
