@@ -1,6 +1,5 @@
 const { doiContentTypes } = require('../../settings/doi');
 const doiConfig = require('../../config/doi.json');
-const { isDevelopment } = require('../../settings/env');
 
 class DOICreatorService {
   // 构建 DOI号
@@ -19,29 +18,22 @@ class DOICreatorService {
   }
   // 构建 DOI链接
   generateDOIUrl(doiNumber) {
-    const doiUrl = `${doiConfig.doiUrlBase}/${doiNumber}`;
+    const doiUrl = `https://doi.org/${doiNumber}`;
     return doiUrl;
   }
 
   // 提交元信息（Crossref要求multipart/form-data + XML）
   postMetadata = async (metadata) => {
-    const url = isDevelopment
-      ? doiConfig.uploadMetadataUrlDev
-      : doiConfig.uploadMetadataUrl;
-
     const blob = new Blob([metadata], { type: 'application/xml' });
 
     // 构建FormData，遵循Crossref字段规范
     const formData = new FormData();
     formData.append('operation', 'doMDUpload');
     formData.append('login_id', `${doiConfig.username}/${doiConfig.role}`);
-    formData.append(
-      'login_passwd',
-      isDevelopment ? doiConfig.passwordDev : doiConfig.password,
-    );
+    formData.append('login_passwd', doiConfig.password);
     formData.append('fname', blob, 'metadata.xml');
     try {
-      const res = await fetch(url, {
+      const res = await fetch(doiConfig.postUrl, {
         method: 'POST',
         // 不手动设置Content-Type，让fetch自动添加boundary
         body: formData,
