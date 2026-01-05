@@ -412,8 +412,8 @@ draftSchema.statics.getLatestHistoryByDid = async (did) => {
     throw 'did 不存在';
   }
   const DraftModel = mongoose.model('drafts');
-  betaHistory = (await DraftModel.getType()).betaHistory;
-  stableHistory = (await DraftModel.getType()).stableHistory;
+  const betaHistory = (await DraftModel.getType()).betaHistory;
+  const stableHistory = (await DraftModel.getType()).stableHistory;
   return DraftModel.findOne({
     did,
     type: { $in: [betaHistory, stableHistory] },
