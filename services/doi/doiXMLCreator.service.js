@@ -32,7 +32,7 @@ class DOIXMLCreatorService {
 
         body: {
           posted_content: {
-            '@_type': 'other',
+            '@_type': 'working_paper',
             // 必须遵守顺序：contributors -> titles -> posted_date -> abstract -> program -> doi_data -> citation_list
 
             // A. 作者信息 (增加 ORCID 支持)
