@@ -149,6 +149,12 @@ const draftSchema = new Schema(
       type: [Number],
       default: [],
     },
+    // 关联元数据
+    metadata: {
+      type: [Schema.Types.ObjectId],
+      ref: 'metadata',
+      default: [],
+    },
   },
   {
     collection: 'drafts',

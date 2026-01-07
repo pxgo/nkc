@@ -176,6 +176,14 @@ module.exports = {
           GET: Operations.getPublishPermission,
         },
       },
+      authors: {
+        GET: Operations.getUserAuthors,
+        POST: Operations.createUserAuthor,
+        PARAMETER: {
+          PATCH: Operations.modifyUserAuthor,
+          DELETE: Operations.deleteUserAuthor,
+        },
+      },
     },
   },
 };

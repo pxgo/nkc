@@ -1,5 +1,6 @@
 <template lang="pug">
   .author-info
+    author-selector(ref='authorSelector')
     .editor-header 作者信息
       small （选填，信息将公开显示）
     .editor-authors
@@ -50,14 +51,18 @@
 </template>
 
 <script>
-import { getState } from "../../lib/js/state";
+import { getState } from '../../lib/js/state';
 import { debounce, immediateDebounce } from '../../lib/js/execution';
+import AuthorSelector from '../../lib/vue/AuthorSelector.vue';
 
 export default {
   data: () => ({
     authorInfos: [],
-    changeContentDebounce: ''
+    changeContentDebounce: '',
   }),
+  components: {
+    'author-selector': AuthorSelector,
+  },
   props: {
     author: {
       type: Array,
@@ -67,40 +72,45 @@ export default {
     author: {
       immediate: true,
       handler(n) {
-        if(typeof n !== "undefined"){
+        if (typeof n !== 'undefined') {
           this.authorInfos = [...n] || [];
         }
-      }
+      },
     },
     authorInfos: {
       deep: true,
-      handler() {this.changeContentDebounce()}
-    }
+      handler() {
+        this.changeContentDebounce();
+      },
+    },
   },
-  created(){
+  created() {
     this.changeContentDebounce = immediateDebounce(this.changeContent, 2000);
+  },
+  mounted() {
+    this.addAuthor();
   },
   methods: {
     changeContent() {
       this.$emit('info-change');
     },
     websiteUserId() {
-      return getState().websiteCode + "ID";
+      return getState().websiteCode + 'ID';
     },
     getData() {
       return { authorInfos: this.authorInfos };
     },
     removeAuthor(index, arr) {
-      sweetQuestion("确定要删除该条作者信息？")
-        .then(function() {
+      sweetQuestion('确定要删除该条作者信息？')
+        .then(function () {
           arr.splice(index, 1);
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     moveAuthor(index, type) {
       let authorInfos = this.authorInfos;
       let otherIndex;
-      if (type === "up") {
+      if (type === 'up') {
         if (index === 0) return;
         otherIndex = index - 1;
       } else {
@@ -113,27 +123,29 @@ export default {
       Vue.set(authorInfos, 0, authorInfos[0]);
     },
     addAuthor() {
+      this.$refs.authorSelector.open();
+
       this.authorInfos.push({
-        name: "",
-        kcid: "",
-        agency: "",
-        agencyCountry: "",
-        agencyAdd: "",
+        name: '',
+        kcid: '',
+        agency: '',
+        agencyCountry: '',
+        agencyAdd: '',
         isContract: false,
         contractObj: {
-          contractEmail: "",
-          contractTel: "",
-          contractAdd: "",
-          contractCode: ""
-        }
+          contractEmail: '',
+          contractTel: '',
+          contractAdd: '',
+          contractCode: '',
+        },
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.contract-info span{
+.contract-info span {
   margin-right: 10px;
 }
 .editor-author input:focus {
@@ -170,7 +182,6 @@ export default {
   font-size: 1.25rem;
   margin: 0.3rem 0;
   color: #555;
-  font-weight: 700;
 }
 .editor-header small {
   color: #88919d;
