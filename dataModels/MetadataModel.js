@@ -1,53 +1,38 @@
 // post, document 对应的元数据
-const { apply } = require('file-loader');
 const mongoose = require('../settings/database');
 
+// 引用文献
 const referencesSchema = new mongoose.Schema(
   {
-    // 引用类型
-    // 取值参考 settings/metadata.js 中 metadataReferenceTypes
-    type: {
+    text: {
       type: String,
-      required: true,
-    },
-    // 引用类型对应的内容
-    content: {
-      type: String,
-      required: true,
-    },
-  },
-  { _id: false },
-);
-
-const fundingSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
+      default: '',
     },
     doi: {
       type: String,
       default: '',
     },
-    awardNumber: {
-      type: [String],
-      default: [],
-    },
   },
-  {
-    _id: false,
-  },
+  { _id: false },
 );
 
-const mulTextSchema = new mongoose.Schema(
+// 资助机构
+const fundingSchema = new mongoose.Schema(
   {
-    lang: {
+    // 名称
+    name: {
       type: String,
       required: true,
     },
-    text: {
+    // 机构doi
+    doi: {
       type: String,
-      required: true,
+      default: '',
+    },
+    // 资助项目编号
+    awardCode: {
+      type: [String],
+      default: [],
     },
   },
   {
@@ -65,7 +50,7 @@ const authorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    uid: {
+    kcid: {
       type: String,
       default: '',
     },
@@ -73,8 +58,27 @@ const authorSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    // 所属机构
-    affiliation: {
+    email: {
+      type: String,
+      default: '',
+    },
+    tel: {
+      type: String,
+      default: '',
+    },
+    address: {
+      type: String,
+      default: '',
+    },
+    agencyName: {
+      type: String,
+      default: '',
+    },
+    agencyDOI: {
+      type: String,
+      default: '',
+    },
+    agencyAddress: {
       type: String,
       default: '',
     },
@@ -84,6 +88,11 @@ const authorSchema = new mongoose.Schema(
 
 const schema = new mongoose.Schema(
   {
+    lang: {
+      type: String,
+      required: true,
+      index: 1,
+    },
     // 来源
     // 取值参考 settings/metadata.js 中 metadataSources
     source: {
@@ -103,13 +112,17 @@ const schema = new mongoose.Schema(
       required: true,
       index: 1,
     },
+    tlm: {
+      type: Date,
+      default: null,
+    },
     // 提交时间
-    applydAt: {
+    appliedAt: {
       type: Date,
       default: null,
     },
     // 成功注册的时间
-    registerdAt: {
+    registeredAt: {
       type: Date,
       default: null,
     },
@@ -131,18 +144,18 @@ const schema = new mongoose.Schema(
       default: [],
     },
     // 标题
-    titles: {
-      type: [mulTextSchema],
-      required: true,
+    title: {
+      type: String,
+      default: '',
     },
     // 摘要
     abstract: {
-      type: [mulTextSchema],
-      required: true,
+      type: String,
+      required: '',
     },
     // 关键词
     keywords: {
-      type: [mulTextSchema],
+      type: [String],
       default: [],
     },
     // 贡献人
@@ -150,8 +163,15 @@ const schema = new mongoose.Schema(
       type: [authorSchema],
       default: [],
     },
+    // 文章说明
+    description: {
+      type: String,
+      default: '',
+    },
   },
   {
     collection: 'metadata',
   },
 );
+
+module.exports = mongoose.model('metadata', schema);

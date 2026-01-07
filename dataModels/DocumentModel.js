@@ -201,6 +201,12 @@ const schema = new mongoose.Schema(
       type: String,
       default: 'json',
     },
+    // 关联元数据
+    metadata: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'metadata',
+      default: [],
+    },
   },
   {
     collection: 'documents',

@@ -6,80 +6,86 @@ const schema = new Schema({
   pid: {
     type: String,
     required: true,
-    index: 1
+    index: 1,
   },
   t: {
     type: String,
-    default: ""
+    default: '',
   },
   c: {
     type: String,
-    default: ""
+    default: '',
   },
   ipoc: {
     type: String,
-    default: ""
+    default: '',
   },
   iplm: {
     type: String,
-    default: ""
+    default: '',
   },
   l: {
     type: String,
-    default: ""
+    default: '',
   },
   toc: {
     type: Date,
     required: true,
-    index: 1
+    index: 1,
   },
   tlm: Date,
   uid: {
     type: String,
     required: true,
-    index: 1
+    index: 1,
   },
   uidlm: {
     type: String,
-    default: "",
-    index: 1
+    default: '',
+    index: 1,
   },
   // 内容版本
   cv: {
     type: Number,
     default: null,
-    index: 1
+    index: 1,
   },
   // 中文摘要
   abstractCn: {
     type: String,
-    default: ""
+    default: '',
   },
   // 英文摘要
   abstractEn: {
     type: String,
-    default: ""
+    default: '',
   },
   // 中文关键词
   keyWordsCn: {
     type: Array,
-    default: []
+    default: [],
   },
   // 英文关键词
   keyWordsEn: {
     type: Array,
-    default: []
+    default: [],
   },
   // 作者信息
   authorInfos: {
     type: Array,
-    default: []
+    default: [],
   },
   // 封面图图片hash
   cover: {
     type: String,
-    default: ""
-  }
+    default: '',
+  },
+  // 关联元数据
+  metadata: {
+    type: [Schema.Types.ObjectId],
+    ref: 'metadata',
+    default: [],
+  },
 });
 
 /*let HistoriesSchema = new Schema({
@@ -157,7 +163,7 @@ const schema = new Schema({
   }
 });*/
 
-schema.pre('save', function(next) {
+schema.pre('save', function (next) {
   try {
     if (!this.iplm) {
       this.iplm = this.ipoc;
@@ -166,22 +172,22 @@ schema.pre('save', function(next) {
       this.uidlm = this.uid;
     }
     if (!this.tlm) {
-      this.tlm = this.toc
+      this.tlm = this.toc;
     }
-    next()
-  } catch(e) {
-    return next(e)
+    next();
+  } catch (e) {
+    return next(e);
   }
 });
 
 /*
-* 创建历史记录
-* @param {Object} oldPost 修改前的post
-* @return {Object}  history
-* @author pengxiguaa 2020-3-30
-* */
+ * 创建历史记录
+ * @param {Object} oldPost 修改前的post
+ * @return {Object}  history
+ * @author pengxiguaa 2020-3-30
+ * */
 schema.statics.createHistory = async (oldPost) => {
-  const model = mongoose.model("histories");
+  const model = mongoose.model('histories');
   let history = Object.assign({}, oldPost);
   delete history._id;
   delete history.__v;

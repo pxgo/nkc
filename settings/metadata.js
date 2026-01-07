@@ -5,17 +5,13 @@ const metadataDOIStatus = {
 };
 
 const metadataSources = {
-  post: 'post',
-  document: 'document',
-};
-
-const metadataReferenceTypes = {
-  doi: 'doi',
-  text: 'text',
+  post: 'post', // 帖子
+  document: 'document', // 独立内容
+  draft: 'draft', // 社区草稿
+  history: 'history', // 社区历史
 };
 
 module.exports = {
   metadataDOIStatus,
   metadataSources,
-  metadataReferenceTypes,
 };

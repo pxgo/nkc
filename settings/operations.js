@@ -464,6 +464,10 @@ const FixedOperations = {
   appVideoPlayer: 'appVideoPlayer',
   visitDOIHome: 'visitDOIHome',
   visitDOIContent: 'visitDOIContent',
+  getUserAuthors: 'getUserAuthors',
+  createUserAuthor: 'createUserAuthor',
+  modifyUserAuthor: 'modifyUserAuthor',
+  deleteUserAuthor: 'deleteUserAuthor',
 };
 
 // 需要在后台配置给相应证书的操作，会经过全局的权限判断

@@ -17,13 +17,6 @@
               button.btn.btn-xs.btn-primary.m-r-05(@click="editArticle(draft.did)") 继续编辑
               button.btn.btn-xs.btn-default(@click="more") 查看更多
               .fa.fa-remove(@click="closeDraft")
-        article-title(
-          :o="reqUrl.o",
-          ref="title",
-          :data="pageData",
-          :notice="(pageState.editorSettings && pageState.editorSettings.onEditNotes) || ''"
-          @info-change="titleContentChange"
-        )
         //- @content-change="contentChange"
         //- 1. @content-change 编辑器内容改变触发 2. c 编辑器内容  newPost
         article-content(
@@ -32,6 +25,13 @@
           :c="pageData.post.c",
           :l="pageData.post.l",
           @content-change="contentChange"
+        )
+        article-title(
+          :o="reqUrl.o",
+          ref="title",
+          :data="pageData",
+          :notice="(pageState.editorSettings && pageState.editorSettings.onEditNotes) || ''"
+          @info-change="titleContentChange"
         )
         .m-b-2(
           v-if="!['newPost', 'modifyThread', 'modifyPost', 'modifyComment'].includes(pageData.type) || reqUrl.o === 'copy'"
@@ -78,7 +78,7 @@
         .m-b-2(v-if="!hideType.includes(pageData.type)")
           //- 1.data包含 createSurveyPermission type post.surveyId
           investigation(ref="investigation", :data="pageData" @info-change="infoChange")
-        .m-b-2(v-if= "!['modifyPost', 'modifyComment'].includes(pageData.type)")
+        div(v-if= "!['modifyPost', 'modifyComment'].includes(pageData.type)")
           //- 1.state
           column(
             ref="column",
@@ -87,6 +87,8 @@
             :data="{ addedToColumn: pageData.addedToColumn, toColumn: pageData.toColumn }"
             @info-change="infoChange"
           )
+        .m-b-2
+          metadata()  
     .col-xs-12.col-md-3
       //- 1.notice 温馨提示的内容  2.data 中只需要post therad type forum allowedAnonymousForumsId havePermissionToSendAnonymousPost threadCategories
       //- 3.@ready-data 提交 和 保存时用于获取数据并提交 4.@remove-editor 提交后移除编辑器
@@ -107,54 +109,60 @@
 </template>
 
 <script>
-import ModifySubmit from "./ModifySubmit.vue";
-import Title from "./Title.vue";
-import Content from "./Content.vue";
-import Classification from "./Classification.vue";
-import Cover from "./Cover.vue";
-import Abstract from "./Abstract.vue";
-import KeyWord from "./KeyWord.vue";
-import AuthorInfo from "./AuthorInfo.vue";
-import Original from "./Original.vue";
-import Investigation from "./Investigation.vue";
-import Column from "./Column.vue";
-import { sweetError } from "../../lib/js/sweetAlert.js";
-import {getState} from "../../lib/js/state";
-import {getRequest, timeFormat, addUrlParam, delUrlParam} from "../../lib/js/tools";
-import { immediateDebounce ,debounce } from '../../lib/js/execution';
+import ModifySubmit from './ModifySubmit.vue';
+import Title from './Title.vue';
+import Content from './Content.vue';
+import Classification from './Classification.vue';
+import Cover from './Cover.vue';
+import Abstract from './Abstract.vue';
+import KeyWord from './KeyWord.vue';
+import AuthorInfo from './AuthorInfo.vue';
+import Original from './Original.vue';
+import Investigation from './Investigation.vue';
+import Column from './Column.vue';
+import Metadata from './Metadata.vue';
+import { sweetError } from '../../lib/js/sweetAlert.js';
+import { getState } from '../../lib/js/state';
+import {
+  getRequest,
+  timeFormat,
+  addUrlParam,
+  delUrlParam,
+} from '../../lib/js/tools';
+import { immediateDebounce, debounce } from '../../lib/js/execution';
 import PublishPermissionChecker from '../../lib/vue/PublishPermissionCheck.vue';
-import { publishPermissionTypes } from "../../lib/js/publish.js";
+import { publishPermissionTypes } from '../../lib/js/publish.js';
 
 // import 'url-search-params-polyfill';
 // import '../../../public/external_pkgs/plyr/plyr.polyfilled.min';
 
-
 export default {
   components: {
-    "modify-submit": ModifySubmit,
-    "article-title": Title,
-    "article-content": Content,
+    'modify-submit': ModifySubmit,
+    'article-title': Title,
+    'article-content': Content,
     classification: Classification,
     cover: Cover,
     abstract: Abstract,
-    "key-word": KeyWord,
-    "author-info": AuthorInfo,
+    'key-word': KeyWord,
+    'author-info': AuthorInfo,
     original: Original,
     investigation: Investigation,
     column: Column,
+    metadata: Metadata,
     'publish-permission-checker': PublishPermissionChecker,
   },
   props: {
     reqUrl: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     drafts: [],
     // 社区内容点击继续创作传递的参数o（复制为新文章或更新已发布文章）
     // o: this.reqUrl.o,
-    hideType: ["newPost", "modifyPost", 'modifyComment'],
+    hideType: ['newPost', 'modifyPost', 'modifyComment'],
     pageData: {},
     pageState: {},
     err: '',
@@ -170,11 +178,11 @@ export default {
   }),
   customOptions: {
     saveDraftIndex: 0,
-    time: 0
+    time: 0,
   },
   created() {
     // this.getUserDraft();
-    window.addEventListener("pageshow", this.clearCache);
+    window.addEventListener('pageshow', this.clearCache);
     this.infoSubmitDebounce = immediateDebounce(this.infoSubmit, 2000);
   },
   mounted() {
@@ -182,13 +190,13 @@ export default {
     this.checkPublishPermission();
   },
   computed: {
-    getTitle(){
+    getTitle() {
       // {forum: "新帖", newThread:"新帖", thread: "回复", newPost: "回复", post: "回复或文章"}[desType]
-      return "草稿"
-    }
+      return '草稿';
+    },
   },
   destroyed() {
-    this.clearCache && window.removeEventListener("pageshow", this.clearCache);
+    this.clearCache && window.removeEventListener('pageshow', this.clearCache);
     this.pageData = {};
     this.pageState = {};
   },
@@ -196,71 +204,84 @@ export default {
     delUrlParam,
     addUrlParam,
     setContent(c) {
-      return c || "未填写"
+      return c || '未填写';
     },
     coverChange(v) {
-      this.$refs.cover.setCover(v)
+      this.$refs.cover.setCover(v);
     },
     //检查用户是否有发布通告的权限
-    checkPublishPermission(){
-      nkcAPI(`/editor/publishNotice?type=${this.reqUrl.type}&id=${this.reqUrl.id}`, 'GET')
-        .then((res)=>{
-          this.publishNotice = res.publishNotice
+    checkPublishPermission() {
+      nkcAPI(
+        `/editor/publishNotice?type=${this.reqUrl.type}&id=${this.reqUrl.id}`,
+        'GET',
+      )
+        .then((res) => {
+          this.publishNotice = res.publishNotice;
         })
-        .catch(err => {
+        .catch((err) => {
           sweetError(err);
-        })
+        });
     },
-    getUserDraft(page=0) {
-      if(this.lockRequest) return;
-      const {uid: stateUid} = getState();
+    getUserDraft(page = 0) {
+      if (this.lockRequest) return;
+      const { uid: stateUid } = getState();
       this.uid = stateUid;
       const self = this;
-      if(!self.uid ) return;
+      if (!self.uid) return;
       let url = `/u/${self.uid}/profile/draftData?page=${page}&perpage=1`;
       // 编辑器类型 newpost modifyPost modifyThread  newThread
       const editType = this.pageData.type;
       // 回复都是依据文章显示的
-      if (editType === "newPost") {
+      if (editType === 'newPost') {
         url += '&type=' + editType;
-        url += "&desTypeId=" + this.pageData.thread.tid;
-
-      } else if ("modifyPost" === editType) {
+        url += '&desTypeId=' + this.pageData.thread.tid;
+      } else if ('modifyPost' === editType) {
         url += '&type=' + editType;
-        url += "&desTypeId=" + this.pageData.thread.pid;
+        url += '&desTypeId=' + this.pageData.thread.pid;
 
         // }
-      } else if (editType === "modifyThread") {
+      } else if (editType === 'modifyThread') {
         // 修改文章存草稿类型为post
         // desTypeId为post表的pid
         url += '&type=' + editType;
-        url += "&desTypeId=" + this.pageData.thread.oc;
-
-      } else if (editType === "newThread") {
+        url += '&desTypeId=' + this.pageData.thread.oc;
+      } else if (editType === 'newThread') {
         url += '&type=' + editType;
-      } else if (editType === "modifyComment") {
+      } else if (editType === 'modifyComment') {
         url += '&type=modifyComment';
-        url += "&desTypeId=" + this.pageData.thread.pid;
+        url += '&desTypeId=' + this.pageData.thread.pid;
       }
 
       nkcAPI(url, 'GET')
-      .then(res => {
-        //除了新建文章thread之外其他的都需要默认填充唯一的did 编辑版草稿
-        if(['modifyThread','modifyPost','modifyComment','newPost','newComment'].includes(editType)&&res.drafts.length){
-          self.editArticle(res.drafts[0].did);
-        }else{
-          self.drafts = res.drafts;
-        }
-      })
-      .catch(err => {
-        sweetError(err);
-      })
+        .then((res) => {
+          //除了新建文章thread之外其他的都需要默认填充唯一的did 编辑版草稿
+          if (
+            [
+              'modifyThread',
+              'modifyPost',
+              'modifyComment',
+              'newPost',
+              'newComment',
+            ].includes(editType) &&
+            res.drafts.length
+          ) {
+            self.editArticle(res.drafts[0].did);
+          } else {
+            self.drafts = res.drafts;
+          }
+        })
+        .catch((err) => {
+          sweetError(err);
+        });
     },
     //继续编辑草稿
     editArticle(did) {
       // 选择草稿填充==》注意 除了新建thread之外，其他的修改都无法进行选择草稿而是默认填充。
       const self = this;
-      if(!did) {sweetError("did不存在"); return};
+      if (!did) {
+        sweetError('did不存在');
+        return;
+      }
       //改变地址栏参数
       if (new URLSearchParams(location.search).get('draftDid')) {
         // console.log(self.delUrlParam('aid'))
@@ -269,19 +290,18 @@ export default {
       self.addUrlParam('draftDid', did);
       // this.pageData.draftId = this.pageData?.draftId ?? self.drafts.find(item=>item._id===aid).did;
       this.pageData.draftId = did;
-      this.getData().
-        then(() => {
-          this.$refs.submit.setSubmitStatus(false);
-        })
+      this.getData().then(() => {
+        this.$refs.submit.setSubmitStatus(false);
+      });
       self.drafts = [];
       this.allowSave = true;
     },
     more() {
-      location.href = '/creation/community/draft'
+      location.href = '/creation/community/draft';
     },
     getData(search) {
       // 暂时保留==》除aid之外还有其他的参数
-      if(!search) search = new URLSearchParams(location.search);
+      if (!search) search = new URLSearchParams(location.search);
       let url = `/editor/data`;
       // 如果后台给了数据就用后台的 否则读取浏览器地址
       let type, id, o;
@@ -294,15 +314,14 @@ export default {
           url += `&o=${this.reqUrl.o}`;
           if (this.reqUrl.type === 'redit') this.lockRequest = true;
         }
-      }
-      else if (search) {
+      } else if (search) {
         // 读取浏览器地址栏参数
-        if(search.constructor.name === 'URLSearchParams'){
-          id = search.get('id')
-          type = search.get('type')
-          o = search.get('o')
+        if (search.constructor.name === 'URLSearchParams') {
+          id = search.get('id');
+          type = search.get('type');
+          o = search.get('o');
         }
-        if(type && id) {
+        if (type && id) {
           this.allowSave = false;
           url = `/editor/data?type=${type}&id=${id}`;
         }
@@ -310,46 +329,60 @@ export default {
           url += `&o=${this.reqUrl.o}`;
         }
       }
-      if(search.get('draftDid')){
+      if (search.get('draftDid')) {
         this.lockRequest = true;
         // 需要把查草稿的参数换成draftDid
-        url = `/editor/data?type=redit&draftDid=${search.get('draftDid')}&o=update`;
+        url = `/editor/data?type=redit&draftDid=${search.get(
+          'draftDid',
+        )}&o=update`;
       }
       if (url === `/editor/data`) this.allowSave = false;
-      return nkcAPI(url, "get")
+      return nkcAPI(url, 'get')
         .then((resData) => {
           // 如果文章已经变为历史版
-          if(resData.post && ['newThread','newPost','newComment'].includes(resData.post.desType) && ['betaHistory', 'stableHistory'].includes(resData.post.type)) {
+          if (
+            resData.post &&
+            ['newThread', 'newPost', 'newComment'].includes(
+              resData.post.desType,
+            ) &&
+            ['betaHistory', 'stableHistory'].includes(resData.post.type)
+          ) {
             throw new Error('您提交的内容已过期，请检查文章状态。');
           }
           // 专业进入 需要把主分类和继续编辑得到的草稿内容合并
-          if (resData.type ==='newThread' &&  resData.mainForums.length) {
+          if (resData.type === 'newThread' && resData.mainForums.length) {
             this.mainForums = resData.mainForums;
           }
           resData.mainForums = this.mainForums;
           this.pageData = resData;
-          if(JSON.stringify(resData.post) !== '{}'){
-            this.$refs?.abstract?.setData(resData.post.abstractCn,resData.post.abstractEn);
-            this.$refs?.keyWord?.setData(resData.post.keyWordsCn,resData.post.keyWordsEn);
+          if (JSON.stringify(resData.post) !== '{}') {
+            this.$refs?.abstract?.setData(
+              resData.post.abstractCn,
+              resData.post.abstractEn,
+            );
+            this.$refs?.keyWord?.setData(
+              resData.post.keyWordsCn,
+              resData.post.keyWordsEn,
+            );
           }
           this.pageState = resData.state;
           this.show = true;
           this.getUserDraft();
           if (!this.allowSave) {
-            this.$options.customOptions.time = Date.now()
+            this.$options.customOptions.time = Date.now();
           }
         })
         .catch((err) => {
-          if(err.error && !err.status){
+          if (err.error && !err.status) {
             this.err = err.error;
             this.$emit('noPermission', err);
           } else {
-            return sweetError(err?.error||err?.message);
+            return sweetError(err?.error || err?.message);
           }
         });
     },
     // 设置编辑器标题、内容
-    setValue(title, content){
+    setValue(title, content) {
       this.$refs.title.setTitle(title);
       this.$refs.content.setContent(content);
     },
@@ -357,9 +390,8 @@ export default {
       if (
         event.persisted ||
         (window.performance && window.performance.navigation.type === 2)
-      )
-      {
-        reload()
+      ) {
+        reload();
       }
     },
     // 控制 提交组件 是否可选匿名发表
@@ -375,7 +407,7 @@ export default {
       !this.hideType.includes(this.pageData.type) &&
         this.$refs.original.contentChange(length);
       // this.$refs.submit.saveToDraftBaseDebounce("automatic");
-      if(!this.initEditorContent) {
+      if (!this.initEditorContent) {
         this.initEditorContent = true;
       } else {
         this.closeDraft();
@@ -396,14 +428,14 @@ export default {
           this.allowSave = true;
           // 调查组件打开就走这了，为了防止需要参数。
           if (!boolean) {
-              return
+            return;
           }
           this.infoSubmitDebounce();
         }
       }
     },
-    infoSubmit(){
-      this.$refs?.submit?.saveToDraftBase("automatic");
+    infoSubmit() {
+      this.$refs?.submit?.saveToDraftBase('automatic');
     },
     // 保存草稿成功后执行
     // saveDraftSuccess() {
@@ -419,9 +451,9 @@ export default {
     // 提交和保存时获取各组件数据
     readyData(submitFn) {
       // 编辑器是否准备完成
-      if(!this.$refs?.content?.$refs?.threadEditor?.$refs?.editor?.ready) return;
-      if (!submitFn)
-        throw("callback is is undefined");
+      if (!this.$refs?.content?.$refs?.threadEditor?.$refs?.editor?.ready)
+        return;
+      if (!submitFn) throw 'callback is is undefined';
       // 每个组件下都有一个getData返回数据
       const refs = this.$refs;
       let submitData = {};
@@ -433,15 +465,16 @@ export default {
       }
       // console.log(submitData, 'submitData')
       // this.pageData.post?._id
-        // 请求前一截url
+      // 请求前一截url
       // 添加 草稿id 和 parentPostId
-      submitData["did"] = this.pageData.draftId;
+      submitData['did'] = this.pageData.draftId;
       // 提交的数据的草稿_id 不再由搜索参数提供，直接由请求回的数据获取
-      submitData["_id"] = new URLSearchParams(location.search).get('aid')
-        || this.pageData.post?._id;
-      submitData["parentPostId"] = this.pageData.post?.parentPostId;
-      submitData["desTypeId"] = this.pageData.post?.desTypeId;
-      submitData["l"] = this.pageData.post?.l || 'json';
+      submitData['_id'] =
+        new URLSearchParams(location.search).get('aid') ||
+        this.pageData.post?._id;
+      submitData['parentPostId'] = this.pageData.post?.parentPostId;
+      submitData['desTypeId'] = this.pageData.post?.desTypeId;
+      submitData['l'] = this.pageData.post?.l || 'json';
       submitFn(submitData);
     },
   },
@@ -454,7 +487,7 @@ export default {
 }
 </style>
 <style scoped lang="less">
-@import "../../publicModules/base";
+@import '../../publicModules/base';
 // .prompt-title {
 //   overflow: hidden;
 //   text-overflow: ellipsis;
@@ -486,7 +519,7 @@ export default {
   .article-box-title {
     .hideText(@line: 1);
   }
-  .article-box-header{
+  .article-box-header {
     color: @primary;
     font-size: 1.2rem;
     font-weight: 700;
@@ -500,13 +533,13 @@ export default {
     text-align: center;
     //margin-right: 10px;
   }
-  .article-box-text{
+  .article-box-text {
     font-size: 1.3rem;
     display: inline;
     margin-right: 0.8rem;
     // .hideText(@line: 1);
   }
-  .article-box-option{
+  .article-box-option {
     position: absolute;
     top: 0;
     right: 0;
@@ -514,7 +547,7 @@ export default {
     line-height: @height;
     width: @boxOptionWidth;
     text-align: right;
-    .fa{
+    .fa {
       height: @height;
       cursor: pointer;
       line-height: @height;
@@ -529,7 +562,7 @@ export default {
     float: left;
     position: relative;
     min-height: 1px;
-}
+  }
 }
 @media (min-width: 992px) {
   .col-md-3 {
@@ -542,31 +575,32 @@ export default {
   }
 }
 
-.row:before{
-    display: table;
-    content: " ";
-}
-.row::after{
+.row:before {
   display: table;
-  content: " ";
+  content: ' ';
 }
-*{
+.row::after {
+  display: table;
+  content: ' ';
+}
+* {
   box-sizing: border-box;
 }
-*:before, *:after {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
-*::after{
-  clear: both
+*::after {
+  clear: both;
 }
 .m-b-2 {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 .row {
-    margin-right: -15px;
-    margin-left: -15px;
+  margin-right: -15px;
+  margin-left: -15px;
 }
 .col-md-9 {
   position: relative;
