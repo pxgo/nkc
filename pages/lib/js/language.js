@@ -1,4 +1,4 @@
-const languageTypes = {
+export const languageTypes = {
   zh_CN: '简体中文',
   zh_TW: '繁體中文',
   ja_JP: '日本語',
@@ -9,6 +9,9 @@ const languageTypes = {
   ru_RU: 'Русский',
 };
 
-module.exports = {
-  languageTypes,
-};
+export const languagesTypesArray = Object.entries(languageTypes).map(
+  ([code, name]) => ({
+    code,
+    name,
+  }),
+);

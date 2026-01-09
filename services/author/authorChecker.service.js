@@ -5,8 +5,9 @@ class AuthorCheckerService {
     const {
       familyName,
       givenName,
+      introduction,
       kcid,
-      ocrid,
+      orcid,
       agencyName,
       agencyAddress,
       agencyDOI,
@@ -26,14 +27,19 @@ class AuthorCheckerService {
       minLength: 1,
       maxLength: 100,
     });
+    formCheckerService.checkString(introduction, {
+      name: '介绍',
+      minLength: 0,
+      maxLength: 1000,
+    });
     if (kcid) {
       const count = await UserModel.countDocuments({ uid: kcid });
       if (count === 0) {
         throw new Error('KCID不存在');
       }
     }
-    if (ocrid) {
-      formCheckerService.checkORCIDNumberFormat(ocrid);
+    if (orcid) {
+      formCheckerService.checkORCIDNumberFormat(orcid);
     }
     if (agencyDOI) {
       formCheckerService.checkDOINumberFormat(agencyDOI);

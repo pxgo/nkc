@@ -47,7 +47,7 @@ export function getEditorConfigs(maxWords = 100000) {
       ],
     ],
     maximumWords: maxWords, // 最大字符数
-    initialFrameHeight: 800, // 编辑器高度
+    initialFrameHeight: 500, // 编辑器高度
     autoHeightEnabled: true, // 编辑器是否随着行数增加而自动长高
     scaleEnabled: false, // 是否允许拉长
     autoFloatEnabled: false,

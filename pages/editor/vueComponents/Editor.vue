@@ -19,20 +19,26 @@
               .fa.fa-remove(@click="closeDraft")
         //- @content-change="contentChange"
         //- 1. @content-change 编辑器内容改变触发 2. c 编辑器内容  newPost
-        article-content(
-          ref="content",
-          :type="reqUrl.type"
-          :c="pageData.post.c",
-          :l="pageData.post.l",
-          @content-change="contentChange"
-        )
-        article-title(
-          :o="reqUrl.o",
-          ref="title",
-          :data="pageData",
-          :notice="(pageState.editorSettings && pageState.editorSettings.onEditNotes) || ''"
-          @info-change="titleContentChange"
-        )
+        .m-b-2
+          article-content(
+            ref="content",
+            :type="reqUrl.type"
+            :c="pageData.post.c",
+            :l="pageData.post.l",
+            @content-change="contentChange"
+          )
+        .m-b-2  
+          .mb-2 基础信息
+          metadata(
+            v-for='(metadata, index) in editorStore.state.metadata' 
+            :metadata-index="index" 
+            :key="`metadata-component-${metadata.uniqueId}`"
+            )
+          button.btn.btn-sm.btn-default(@click='editorStore.addMetadata') 添加
+        .m-b-2
+          funder  
+        .m-b-2
+          description  
         .m-b-2(
           v-if="!['newPost', 'modifyThread', 'modifyPost', 'modifyComment'].includes(pageData.type) || reqUrl.o === 'copy'"
         )
@@ -47,27 +53,8 @@
           //- 1.value 封面图值
           cover(ref="cover", :value="pageData.post && pageData.post.cover" @info-change="infoChange")
 
-        .m-b-2(v-if="!hideType.includes(pageData.type)")
-          //- 1 abstract 中英文摘要
-          abstract(
-            ref="abstract",
-            :abstract="{ cn: pageData.post && pageData.post.abstractCn, en: pageData.post && pageData.post.abstractEn }"
-            @info-change="infoChange"
-          )
-        .m-b-2(v-if="!hideType.includes(pageData.type)")
-          //- 1.keywords 中英文关键字
-          key-word(
-            ref="keyWord",
-            :keywords="{ cn: pageData.post && pageData.post.keyWordsCn, en: pageData.post && pageData.post.keyWordsEn }"
-            @info-change="infoChange"
-          )
-        .m-b-2(v-if="!hideType.includes(pageData.type)")
-          //- 1.author 作者信息
-          author-info(
-            ref="authorInfo",
-            :author="pageData.post && pageData.post.authorInfos"
-            @info-change="infoChange"
-          )
+        
+        
         .m-b-2(v-if="!hideType.includes(pageData.type)")
           //- 1.original 包含最小字数和文章状态
           original(
@@ -87,8 +74,7 @@
             :data="{ addedToColumn: pageData.addedToColumn, toColumn: pageData.toColumn }"
             @info-change="infoChange"
           )
-        .m-b-2
-          metadata()  
+        
     .col-xs-12.col-md-3
       //- 1.notice 温馨提示的内容  2.data 中只需要post therad type forum allowedAnonymousForumsId havePermissionToSendAnonymousPost threadCategories
       //- 3.@ready-data 提交 和 保存时用于获取数据并提交 4.@remove-editor 提交后移除编辑器
@@ -110,19 +96,16 @@
 
 <script>
 import ModifySubmit from './ModifySubmit.vue';
-import Title from './Title.vue';
 import Content from './Content.vue';
 import Classification from './Classification.vue';
 import Cover from './Cover.vue';
-import Abstract from './Abstract.vue';
-import KeyWord from './KeyWord.vue';
-import AuthorInfo from './AuthorInfo.vue';
 import Original from './Original.vue';
 import Investigation from './Investigation.vue';
 import Column from './Column.vue';
-import Metadata from './Metadata.vue';
 import { sweetError } from '../../lib/js/sweetAlert.js';
 import { getState } from '../../lib/js/state';
+import Metadata from './metadata/Metadata.vue';
+import { editorStore } from '../store/editor';
 import {
   getRequest,
   timeFormat,
@@ -132,6 +115,9 @@ import {
 import { immediateDebounce, debounce } from '../../lib/js/execution';
 import PublishPermissionChecker from '../../lib/vue/PublishPermissionCheck.vue';
 import { publishPermissionTypes } from '../../lib/js/publish.js';
+import References from './References.vue';
+import Funder from './Funder.vue';
+import Description from './Description.vue';
 
 // import 'url-search-params-polyfill';
 // import '../../../public/external_pkgs/plyr/plyr.polyfilled.min';
@@ -139,18 +125,17 @@ import { publishPermissionTypes } from '../../lib/js/publish.js';
 export default {
   components: {
     'modify-submit': ModifySubmit,
-    'article-title': Title,
     'article-content': Content,
     classification: Classification,
     cover: Cover,
-    abstract: Abstract,
-    'key-word': KeyWord,
-    'author-info': AuthorInfo,
     original: Original,
     investigation: Investigation,
     column: Column,
-    metadata: Metadata,
     'publish-permission-checker': PublishPermissionChecker,
+    metadata: Metadata,
+    references: References,
+    funder: Funder,
+    description: Description,
   },
   props: {
     reqUrl: {
@@ -175,6 +160,7 @@ export default {
     publishNotice: false,
     noticesExplain: '',
     publishPermissionTypes,
+    metadataArray: [],
   }),
   customOptions: {
     saveDraftIndex: 0,
@@ -190,6 +176,9 @@ export default {
     this.checkPublishPermission();
   },
   computed: {
+    editorStore() {
+      return editorStore;
+    },
     getTitle() {
       // {forum: "新帖", newThread:"新帖", thread: "回复", newPost: "回复", post: "回复或文章"}[desType]
       return '草稿';

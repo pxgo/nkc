@@ -12,6 +12,9 @@ const {
 const {
   authorUpdaterService,
 } = require('../../../../services/author/authorUpdater.service');
+const {
+  authorPhotoService,
+} = require('../../../../services/author/authorPhoto.service');
 
 router
   .get('/', OnlyUser(), async (ctx, next) => {
@@ -22,14 +25,22 @@ router
     await next();
   })
   .post('/', OnlyUser(), async (ctx, next) => {
-    const author = (ctx.body && ctx.body.author) || {};
+    const author = JSON.parse(ctx.body.fields.author);
+    const photoFile = ctx.body.files.photo;
     await authorCheckerService.checkAuthorInfo(author);
+    if (photoFile) {
+      author.photo = await authorPhotoService.saveAuthorPhoto(photoFile);
+    }
     await authorCreatorService.createAuthor(ctx.state.uid, author);
     await next();
   })
   .patch('/:id', OnlyUser(), async (ctx, next) => {
-    const author = (ctx.body && ctx.body.author) || {};
+    const author = JSON.parse(ctx.body.fields.author);
+    const photoFile = ctx.body.files.photo;
     await authorCheckerService.checkAuthorInfo(author);
+    if (photoFile) {
+      author.photo = await authorPhotoService.saveAuthorPhoto(photoFile);
+    }
     await authorUpdaterService.updateAuthorInfo(author._id, author);
     await next();
   })
