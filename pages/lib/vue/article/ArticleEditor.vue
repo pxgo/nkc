@@ -70,7 +70,7 @@
     select-column(ref="selectColumn")
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 @import '../../../publicModules/base';
 .article-editor {
   .article-box {

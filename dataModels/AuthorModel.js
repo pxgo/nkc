@@ -19,6 +19,14 @@ const schema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    introduction: {
+      type: String,
+      default: '',
+    },
+    photo: {
+      type: String,
+      default: '',
+    },
     orcid: {
       type: String,
       default: '',

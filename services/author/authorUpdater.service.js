@@ -5,8 +5,9 @@ class AuthorUpdaterService {
     const {
       familyName,
       givenName,
+      introduction,
       kcid,
-      ocrid,
+      orcid,
       agencyName,
       agencyAddress,
       agencyDOI,
@@ -22,8 +23,9 @@ class AuthorUpdaterService {
         $set: {
           familyName,
           givenName,
+          introduction,
           kcid,
-          ocrid,
+          orcid,
           agencyName,
           agencyAddress,
           agencyDOI,

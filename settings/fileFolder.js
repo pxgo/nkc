@@ -40,6 +40,8 @@ module.exports = {
   documentCover: 'attachment/cover',
   // OAuth App
   OAuthAppIcon: 'attachment/cover',
+  // author photo
+  authorPhoto: 'attachment/author',
 
   // VerifiedUploadModel
 

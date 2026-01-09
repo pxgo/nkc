@@ -316,6 +316,12 @@ var Tools = function () {
       case 'documentNumber': {
         return '/document/d/' + id;
       }
+      case 'orcid': {
+        return 'https://orcid.org/' + id;
+      }
+      case 'doi': {
+        return 'https://doi.org/' + id;
+      }
     }
   };
   self.getAnonymousInfo = function () {
