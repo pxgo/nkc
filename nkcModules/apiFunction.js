@@ -6,7 +6,6 @@ const http = require('http');
 const randomatic = require('randomatic');
 moment.locale('zh-cn');
 const defaultPerpage = paging.perpage;
-const axios = require('axios');
 let fn = {};
 
 fn.paging = (page = 0, count, perpage, buttonCount = 5) => {
@@ -129,8 +128,8 @@ fn.newPasswordObject = (plain) => {
   };
 };
 fn.contentLength = (content) => {
-  const zhCN = content.match(/[^\x00-\xff]/g);
-  const other = content.match(/[\x00-\xff]/g);
+  const zhCN = content.match(/[^\p{ASCII}]/gu);
+  const other = content.match(/\p{ASCII}/gu);
   const length1 = zhCN ? zhCN.length * 2 : 0;
   const length2 = other ? other.length : 0;
   return length1 + length2;
@@ -566,7 +565,9 @@ fn.getTrackInfoData = (trackNumber, trackName) => {
         if (buffer) {
           try {
             data = JSON.parse(buffer);
-          } catch (err) {}
+          } catch (err) {
+            data = { code: 1, data: '物流信息接口返回值格式错误' };
+          }
         } else {
           data = { code: 1, data: '物流信息接口没有返回值' };
         }
