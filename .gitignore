@@ -33,3 +33,10 @@
 /pages/demo
 /.webpack_cache
 /geo
+
+/configs.development.yaml
+/configs.production.yaml
+
+/backup
+/src/logs
+/src/resources

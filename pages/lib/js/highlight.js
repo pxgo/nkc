@@ -1,5 +1,5 @@
 /* eslint-disable linebreak-style */
-import highlightLanguages from '../../../nkcModules/highlightLanguages.json';
+import highlightLanguages from '../../../public/highlightLanguages.json';
 import hljs from 'highlight.js/lib/core';
 // 按需引入并注册需要的语言，避免将所有 languages 打包进来
 import javascript from 'highlight.js/lib/languages/javascript';

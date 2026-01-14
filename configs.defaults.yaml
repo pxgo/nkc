@@ -1,0 +1,156 @@
+# 默认账户
+account:
+  username: ''
+  password: ''
+
+# 阿里物流查询
+aliAppCode: ''
+
+# 支付宝
+alipay:
+  # 转账
+  transfer:
+    appId: ''
+    url: 'https://openapi.alipay.com/gateway.do'
+    alipayCertPublicKeyPath: ''
+    alipayRootCertPath: ''
+    appCertPublicKeyPath: ''
+    privateKeyPath: ''
+
+  # 收款
+  receipt:
+    url: 'https://mapi.alipay.com/gateway.do?'
+    sellerId: ''
+    sellerEmail: ''
+    key: ''
+    notifyUrl: 'https://yourdomain/payment/alipay'
+
+# 微信支付
+wechatPay:
+  appId: ''
+  mchId: ''
+  orderTimeout: 1800000
+  certFilePath: ''
+  certNumber: ''
+  nativeUrl: ''
+  H5Url: ''
+  APIv3: ''
+  notifyUrl: ''
+
+# 附件服务
+attachment:
+  - startingTime: '2000-01-01'
+    endTime: '3021-10-01'
+    url: 'http://127.0.0.1:10292'
+
+# 数据库备份
+backup:
+  folder: './backup'
+  time: '0 0 0 * * *'
+
+# 微服务
+moleculer:
+  namespace: 'NKC_MESH_PRODUCTION'
+  nodeID: 'nkc_main'
+  transporter: 'redis://127.0.0.1:6379'
+  registry:
+    strategy: 'Random'
+    discoverer: 'Local'
+  web:
+    enabled: false
+    port: 20394
+    host: '127.0.0.1'
+
+# cookie
+cookie:
+  secret: ''
+  experimentalSecret: ''
+  proxySecret: ''
+  maxAge: 604800000
+
+# doi
+doi:
+  doiPrefix: ''
+  username: ''
+  password: ''
+  role: ''
+  postUrl: 'https://test.crossref.org/servlet/deposit'
+  email: ''
+
+# 搜索数据库
+elasticSearch:
+  address: '127.0.0.1'
+  port: 9200
+  username: ''
+  password: ''
+  indexName: 'nkc'
+  analyzer: 'ng_analyzer'
+  searchAnalyzer: 'standard'
+
+# 错误提示
+error:
+  notFound: ''
+  internalServerError: ''
+
+# llm接口
+llm:
+  baseURL: 'http://127.0.0.1:11434/v1'
+  apiKey: ''
+  model: ''
+
+# mongodb
+mongodb:
+  address: '127.0.0.1'
+  port: '27019'
+  database: 'nkc'
+  username: ''
+  password: ''
+  poolSize: 20
+  keepAlive: 120
+  url: 'mongodb://127.0.0.1:27017/nkc'
+
+#PDF Preview
+pdfPreview:
+  maxGetPageScale: 0.5
+  maxGetPageCount: 8
+
+# redis
+redis:
+  address: '127.0.0.1'
+  port: 6379
+  password: ''
+  db: 2
+
+# server
+server:
+  address: '0.0.0.0'
+  port: 9000
+  domain: 'http://127.0.0.1:9000'
+  reserveDomain:
+    - http://127.0.0.1
+  maxIpsCount: 2
+  proxy: true
+  domainWhitelist:
+    - http://127.0.0.1
+  fileDomain: 'http://127.0.0.2:9000'
+
+# 存储服务
+store:
+  port: 10292
+  attachment:
+    - startingTime: '1970-01-01'
+      endTime: '2077-07-14'
+      path: 'path'
+
+# 后台管理操作积分
+transfer:
+  operatorId:
+    - 1
+
+# 文件上传
+upload:
+  maxFileSize: 4294967296
+
+#GEO
+geo:
+  dbFilePath: ''

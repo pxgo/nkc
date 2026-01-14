@@ -1,0 +1,113 @@
+const mainRouter = require('./routes');
+const Koa = require('koa');
+require('colors');
+const loggerModule = require('./nkcModules/logger');
+const path = require('path');
+const koaBody = require('koa-body');
+const koaCompress = require('koa-compress');
+const koaRewrite = require('koa-rewrite');
+const settings = require('./settings');
+const helmet = require('koa-helmet');
+const { corsMiddleware } = require('./middlewares');
+const { isProduction } = require('./settings/env');
+const { getCookieKeys } = require('./nkcModules/cookie');
+const awesomeStatic = require('awesome-static');
+const koaStaticCache = require('koa-static-cache');
+const koaStatic = require('koa-static');
+const { getUrl } = require('./nkcModules/tools');
+const staticServe = (p, cache) => {
+  if (cache) {
+    return koaStaticCache(p, {
+      buffer: true,
+      dynamic: true,
+      gzip: true,
+      maxAge: isProduction ? 604800 : 0,
+    });
+  } else {
+    return koaStatic(p, {
+      setHeaders: function (response) {
+        response.setHeader(
+          'Cache-Control',
+          `public, ${isProduction ? 'max-age=604800' : 'no-cache'}`,
+        );
+      },
+    });
+  }
+};
+const { permissionRef } = require('./middlewares/permission');
+const app = new Koa();
+const conditional = require('koa-conditional-get');
+const etag = require('koa-etag');
+app.on('error', (err) => {
+  loggerModule.error(`KOA ERROR:`);
+  loggerModule.error(err);
+});
+
+const {
+  auth,
+  init,
+  initState,
+  initMethods,
+  body,
+  urlRewrite,
+  logger,
+  cache,
+  IPLimit,
+  filterDomain,
+  apiData,
+} = require('./middlewares');
+// todo: 修复路径 1
+const { configs } = require('@/settings/env');
+for (const item of mainRouter.stack) {
+  if (item.methods.length > 0) {
+    // 需要检测权限中间件
+    if (!permissionRef.includes(item.stack[0])) {
+      console.error(
+        new Error(
+          `No permission middleware in [${item.methods.join(',')}:${
+            item.path
+          }]`,
+        ),
+      );
+      process.exit(1);
+    }
+  }
+}
+const koaBodySetting = settings.upload.koaBodySetting;
+koaBodySetting.formidable.maxFileSize = configs.upload.maxFileSize;
+app.keys = getCookieKeys();
+app
+  .use(corsMiddleware)
+  // gzip
+  .use(koaCompress({ threshold: 2048 }))
+  // 静态文件映射
+  .use(staticServe(path.resolve(__dirname, './nkcModules'), false))
+  .use(staticServe(path.resolve(__dirname, '../public'), false))
+  .use(staticServe(path.resolve(__dirname, '../node_modules'), false))
+  .use(staticServe(path.resolve(__dirname, '../dist/pages'), false))
+  .use(
+    awesomeStatic(path.resolve(__dirname, '../resources/tools'), {
+      route: '/tools',
+    }),
+  )
+  // 请求头安全设置
+  .use(helmet())
+  .use(koaBody(koaBodySetting))
+  // 视频段支持
+  .use(conditional())
+  .use(etag())
+  .use(urlRewrite)
+  .use(koaRewrite('/favicon.ico', getUrl('siteIcon', 'ico')))
+  .use(init)
+  .use(initState)
+  .use(initMethods)
+  .use(filterDomain)
+  // IP 黑名单
+  .use(IPLimit)
+  .use(auth)
+  .use(cache)
+  .use(logger)
+  .use(mainRouter.routes())
+  .use(apiData)
+  .use(body);
+module.exports = app.callback();

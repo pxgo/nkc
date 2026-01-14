@@ -1,3 +1,3 @@
-import { fluentuiEmojiObject } from '../../../nkcModules/fluentuiEmoji';
+import { fluentuiEmojiObject } from '../../../src/nkcModules/fluentuiEmoji';
 
 export const emojiGroups = fluentuiEmojiObject;

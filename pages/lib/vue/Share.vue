@@ -7,35 +7,35 @@
     canvas(ref="weChatCanvas" v-show='showQR')
 </template>
 <style lang="less" scoped>
-  .share-panel-icons{
+.share-panel-icons {
+  text-align: center;
+  .share-panel-header {
+    text-align: left;
+  }
+  .share-panel-icon {
+    height: 3rem;
+    width: 3rem;
+    display: inline-block;
+    margin: 0 0.5rem;
+    cursor: pointer;
+    line-height: 3rem;
     text-align: center;
-    .share-panel-header{
-      text-align: left;
-    }
-    .share-panel-icon{
-      height: 3rem;
-      width: 3rem;
-      display: inline-block;
-      margin: 0 0.5rem;
-      cursor: pointer;
-      line-height: 3rem;
-      text-align: center;
-      background-color: #f4f4f4;
-      border-radius: 50%;
-      img{
-        width: 50%;
-        height: 50%;
-      }
+    background-color: #f4f4f4;
+    border-radius: 50%;
+    img {
+      width: 50%;
+      height: 50%;
     }
   }
+}
 </style>
 <script>
-import {nkcAPI} from "../js/netAPI";
-import {sweetError} from "../js/sweetAlert";
-import {screenTopAlert, screenTopWarning} from "../js/topAlert";
-import {fixUrl} from "../js/url";
-import {getUrl} from "../js/tools";
-import ClipboardJS from "../../../public/clipboard/clipboard.min";
+import { nkcAPI } from '../js/netAPI';
+import { sweetError } from '../js/sweetAlert';
+import { screenTopAlert, screenTopWarning } from '../js/topAlert';
+import { fixUrl } from '../js/url';
+import { getUrl } from '../js/tools';
+import ClipboardJS from '../../../public/clipboard/clipboard.min';
 
 export default {
   props: ['type', 'id'],
@@ -58,8 +58,8 @@ export default {
         type: 'qzone',
       },
       {
-        type: 'weibo'
-      }
+        type: 'weibo',
+      },
     ],
     showQR: false,
     clipboard: null,
@@ -71,7 +71,7 @@ export default {
     },
     shareUrl() {
       return window.location.origin + this.content.url;
-    }
+    },
   },
   methods: {
     getUrl,
@@ -79,73 +79,71 @@ export default {
       const self = this;
       return nkcAPI(`/s`, 'POST', {
         type,
-        id
-      })
-        .then((res) => {
-          const {shareContent} = res;
-          self.content.title = shareContent.title;
-          self.content.cover = shareContent.cover;
-          self.content.desc = shareContent.desc;
-          self.content.url = shareContent.url;
-        })
+        id,
+      }).then((res) => {
+        const { shareContent } = res;
+        self.content.title = shareContent.title;
+        self.content.cover = shareContent.cover;
+        self.content.desc = shareContent.desc;
+        self.content.url = shareContent.url;
+      });
     },
     share(type) {
       let newWindow = null;
       const self = this;
-      if(['QQ', 'qzone', 'weibo'].includes(type)) {
+      if (['QQ', 'qzone', 'weibo'].includes(type)) {
         newWindow = window.open();
       }
       return Promise.resolve()
         .then(() => {
-          if(!self.loaded) {
-            return self.setShareInfo(self.type, self.id)
-              .then(() => {
-                return self.renderQR();
-              });
+          if (!self.loaded) {
+            return self.setShareInfo(self.type, self.id).then(() => {
+              return self.renderQR();
+            });
           }
         })
         .then(() => {
-          if(type === 'wechat') {
-            return self.showQR = !self.showQR;
+          if (type === 'wechat') {
+            return (self.showQR = !self.showQR);
           }
-          const {url, title, desc, cover} = self.content;
+          const { url, title, desc, cover } = self.content;
           const fixedUrl = fixUrl(url);
           const fixedCover = fixUrl(cover);
-          if(type === 'copy') {
-            if(self.usedClipboardButton !== self.$refs.clipboardButton) {
+          if (type === 'copy') {
+            if (self.usedClipboardButton !== self.$refs.clipboardButton) {
               self.clipboard = new ClipboardJS(self.$refs.clipboardButton, {
-                text: function(trigger) {
+                text: function (trigger) {
                   return fixedUrl;
-                }
+                },
               });
-              self.clipboard.on('success', function() {
-                screenTopAlert("链接已复制到粘贴板");
+              self.clipboard.on('success', function () {
+                screenTopAlert('链接已复制到粘贴板');
               });
               self.usedClipboardButton = self.$refs.clipboardButton;
               self.$refs.clipboardButton.click();
             }
             return;
           }
-          if(type === 'QQ') {
+          if (type === 'QQ') {
             newWindow.location = `http://connect.qq.com/widget/shareqq/index.html?url=${fixedUrl}&title=${title}&pics=${fixedCover}&summary=${desc}`;
-          } else if(type === 'qzone') {
-            newWindow.location=`https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${fixedUrl}&title=${title}&pics=${fixedCover}&summary=${desc}`;
+          } else if (type === 'qzone') {
+            newWindow.location = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${fixedUrl}&title=${title}&pics=${fixedCover}&summary=${desc}`;
           } else {
-            newWindow.location=`http://v.t.sina.com.cn/share/share.php?url=${fixedUrl}&title=${title}&pic=${fixedCover}`;
+            newWindow.location = `http://v.t.sina.com.cn/share/share.php?url=${fixedUrl}&title=${title}&pic=${fixedCover}`;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           newWindow.close();
-          sweetError(err)
+          sweetError(err);
         });
     },
     renderQR() {
-      const {url} = this.content;
+      const { url } = this.content;
       const fixedUrl = fixUrl(url);
       QRCode.toCanvas(this.$refs.weChatCanvas, fixedUrl, (err) => {
-        if(err) screenTopWarning(err.message || err.toString())
-      })
-    }
-  }
-}
+        if (err) screenTopWarning(err.message || err.toString());
+      });
+    },
+  },
+};
 </script>
