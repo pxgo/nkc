@@ -73,7 +73,7 @@ const baseConfig = {
   target: 'es5',
   cache: {
     type: 'filesystem',
-    cacheDirectory: path.resolve(__dirname, '.webpack_cache'),
+    cacheDirectory: path.resolve(__dirname, '.webpack'),
     buildDependencies: {
       config: [__filename],
     },

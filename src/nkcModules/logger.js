@@ -2,7 +2,8 @@ const log4js = require('log4js');
 const { isDevelopment } = require('../settings/env');
 const { processId } = require('../settings/env');
 const { files: fileOperationsId } = require('../settings/operationGroups');
-
+const path = require('path');
+const logsDirPath = path.resolve(__dirname, '../../logs');
 const logger = {
   error,
   info,
@@ -37,14 +38,14 @@ log4js.configure({
     common: {
       type: 'file',
       layout,
-      filename: 'logs/nkc/all',
+      filename: path.join(logsDirPath, 'nkc', 'all'),
       pattern: `yyyy-MM-dd.pid-${process.pid}.log`,
       alwaysIncludePattern: true,
     },
     internalServerError: {
       type: 'file',
       layout,
-      filename: 'logs/nkc/error',
+      filename: path.join(logsDirPath, 'nkc', 'error'),
       pattern: `yyyy-MM-dd.pid-${process.pid}.log`,
       alwaysIncludePattern: true,
     },
