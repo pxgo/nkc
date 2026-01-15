@@ -35,7 +35,7 @@ fundRouter
     } else if (fundSettings.closed.status) {
       // 临时关闭
       return (ctx.body = nkcModules.render(
-        path.resolve(__dirname, '../../pages/fund/closed.pug'),
+        path.resolve(__dirname, '../../../pages/fund/closed.pug'),
         data,
         state,
       ));

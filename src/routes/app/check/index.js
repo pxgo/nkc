@@ -3,7 +3,7 @@
  * */
 const Router = require('koa-router');
 // todo: 修复路径 1
-const config = require('../../../../config/server.json');
+const serverConfigs = require('@/settings/env').configs.server;
 const checkRouter = new Router();
 const { appStores } = require('../../../settings/app');
 const { Public } = require('../../../middlewares/permission');
@@ -29,7 +29,7 @@ checkRouter.get('/', Public(), async (ctx, next) => {
     if (latestVer) {
       const newVersion = latestVer.toObject();
       newVersion.url =
-        config.domain +
+        serverConfigs.domain +
         '/app/' +
         newVersion.appPlatForm +
         '/' +

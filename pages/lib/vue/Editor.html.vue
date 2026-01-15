@@ -126,7 +126,7 @@ import {
   clearHighlightClass,
 } from '../js/dataConversion';
 import { UploadResource } from '../js/resource';
-import { isBase64 } from '../../../src/nkcModules/regExp';
+import { isBase64 } from '../js/regExp';
 import { base64ToFile } from '../js/file';
 import { IsFirefox } from '../js/browser';
 import Loading from '../vue/Loading.vue';

@@ -397,7 +397,6 @@ function nkc_render(options){
 
       case 'mp4'://these are standards
       case 'webm':
-      case 'ogg':
       replaced = '<br><video src="/r/'+rid+'"></video>';
 
       break;

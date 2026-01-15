@@ -16,7 +16,7 @@ const { platform } = require('os');
 const fs = require('fs');
 const { stat, unlink } = fs;
 const path = require('path');
-const __projectRoot = path.resolve(__dirname, `../`);
+const __projectRoot = path.resolve(__dirname, `../../`);
 const execProcess = promisify(exec);
 const { upload } = require('../settings');
 

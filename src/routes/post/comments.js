@@ -97,7 +97,7 @@ router.get('/', Public(), async (ctx, next) => {
   data.htmlContent = await nkcModules.render(
     PATH.resolve(
       __dirname,
-      `../../pages/thread/singleComment/singleComments.pug`,
+      `../../../pages/thread/singleComment/singleComments.pug`,
     ),
     { ...data, comments },
     state,

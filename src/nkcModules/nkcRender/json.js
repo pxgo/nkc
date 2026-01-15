@@ -6,7 +6,11 @@ const {
 } = require('../../nkcModules/highlightLanguages.js');
 const path = require('path');
 const tools = require('../tools');
-const homePugFilePath = path.resolve(__dirname, './nodes/home.pug');
+// TODO: 调整pug文件路径到pages
+const homePugFilePath = path.resolve(
+  __dirname,
+  '../../../pages/publicModules/render/nodes/home.pug',
+);
 const videoSize = require('../../settings/video');
 const { domainWhitelistReg, urlReg } = require('../../nkcModules/regExp');
 const { replaceEmojiWithImgTags } = require('../fluentuiEmoji');

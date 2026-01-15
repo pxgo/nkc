@@ -94,7 +94,10 @@ async function makeCaptchaImage() {
   ctx.putImageData(imageData, 0, 0);
 
   if (isDevelopment) {
-    let captchaTempImagePath = path.resolve(__dirname, '../../tmp/captcha.png');
+    let captchaTempImagePath = path.resolve(
+      __dirname,
+      '../../../tmp/captcha.png',
+    );
     const out = fs.createWriteStream(captchaTempImagePath);
     const stream = canvas.createPNGStream();
     stream.pipe(out);
@@ -246,7 +249,7 @@ function markRound(info, ctx) {
 
 // 从public/captcha文件夹中随机获取一张图片
 async function getRandomBackgroundImage() {
-  let captchaImageDir = path.resolve(__dirname, '../../public/captcha');
+  let captchaImageDir = path.resolve(__dirname, '../../../public/captcha');
   let files = await fs.promises.readdir(captchaImageDir);
   let fileName = files[randomIn(files.length - 1, 0)];
   return `${captchaImageDir}/${fileName}`;

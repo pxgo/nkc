@@ -71,7 +71,7 @@ async function sendForumMessage(data) {
   )[0];
   const template = PATH.resolve(
     __dirname,
-    `../pages/publicModules/thread_panel/thread_panel.pug`,
+    `../../pages/publicModules/thread_panel/thread_panel.pug`,
   );
   let usedForumsId = [];
   for (const fid of thread.mainForumsId) {

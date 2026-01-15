@@ -1633,7 +1633,7 @@ schema.statics.renderSingleCommentToHtml = async (cid) => {
   const html = render(
     PATH.resolve(
       __dirname,
-      '../pages/publicModules/commentCenter/singleComment/singleCommentPage.pug',
+      '../../pages/publicModules/commentCenter/singleComment/singleCommentPage.pug',
     ),
     { commentData, user },
     {},

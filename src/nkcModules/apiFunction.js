@@ -537,14 +537,13 @@ fn.getTrackInfo = async (trackNumber, trackName) => {
  */
 fn.getTrackInfoData = (trackNumber, trackName) => {
   // todo: 修复路径 1
-  const aliAppCode = require('../../config/aliAppCode');
-  const { appCode } = aliAppCode;
+  const aliAppCode = require('@/settings/env').configs.aliAppCode;
   let options = {
     hostname: `wuliu.market.alicloudapi.com`, //接口域
     headers: {
       //请求头
       'Content-Type': 'application/json; charset=utf-8',
-      Authorization: 'APPCODE ' + appCode,
+      Authorization: 'APPCODE ' + aliAppCode,
     },
   };
   if (!trackName || trackName == 'AUTO') {
@@ -842,7 +841,7 @@ fn.extendManagementInfo = async (ctx) => {
 };
 // 获取config文件内容，实时刷新
 fn.getConfigByName = async (name) => {
-  const configPath = path.resolve(__dirname, `../config/${name}.json`);
+  const configPath = path.resolve(__dirname, `../../config/${name}.json`);
   return new Promise((resolve, reject) => {
     fs.readFile(configPath, (err, data) => {
       if (err) {

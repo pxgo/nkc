@@ -1,10 +1,10 @@
 const Router = require('koa-router');
 const shareRouter = new Router();
 // todo: 修复路径 1
-const serverConfig = require('../../../config/server');
+const serverConfigs = require('@/settings/env').configs.server;
 const { getJsonStringTextSlice } = require('../../nkcModules/json');
 const reg = new RegExp(
-  `^` + serverConfig.domain.replace(/\//g, '\\/').replace(/\./g, '\\.'),
+  `^` + serverConfigs.domain.replace(/\//g, '\\/').replace(/\./g, '\\.'),
   'i',
 );
 const { Public, OnlyUnbannedUser } = require('../../middlewares/permission');

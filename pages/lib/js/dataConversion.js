@@ -7,7 +7,8 @@
 import { marked } from 'marked';
 import createDOMPurify from 'dompurify';
 import { getState } from './state';
-import { getEmojiCharByUnicode } from '../../../src/nkcModules/fluentuiEmoji';
+// TODO: 禁止依赖后端文件
+import { getEmojiCharByUnicode } from './fluentuiEmoji';
 
 export function strToObj(str) {
   return JSON.parse(decodeURIComponent(str));

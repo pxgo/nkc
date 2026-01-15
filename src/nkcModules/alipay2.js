@@ -6,9 +6,9 @@ const crypto = require('crypto');
 const AlipaySdk = require('alipay-sdk').default;
 
 // todo: 修复路径 1
-const alipayConfig = require('../../config/alipay.json');
+const alipayConfig = require('@/settings/env').configs.alipay;
 // todo: 修复路径 1
-const serverConfig = require('../../config/server.json');
+const serverConfig = require('@/settings/env').configs.server;
 
 let privateKey = '';
 let alipayCertPublicKey = '';

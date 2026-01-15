@@ -1,4 +1,5 @@
 const logger = require('./nkcModules/logger');
+const nkcModules = require('nkcModules');
 async function InitDefaultData() {
   logger.info(`初始化默认数据...`);
   const defaultData = require('./defaultData');
@@ -22,8 +23,8 @@ async function InitOperations() {
 
 async function InitCache() {
   logger.info(`初始化缓存...`);
-  const cacheBaseInfo = require('./redis/cache');
-  await cacheBaseInfo();
+  const { redisService } = require('@/services/redis/redis.service');
+  await redisService.cacheBaseInfo();
   logger.info(`完成`);
 }
 

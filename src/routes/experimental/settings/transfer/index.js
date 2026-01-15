@@ -1,7 +1,7 @@
 const Router = require('koa-router');
 const router = new Router();
 // todo: 修复路径 1
-const transferConfigs = require('../../../../../config/transferKCB');
+const transferConfigs = require('@/settings/env').configs.transfer;
 const { OnlyOperation } = require('../../../../middlewares/permission');
 const { Operations } = require('../../../../settings/operations');
 router

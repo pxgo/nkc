@@ -1,7 +1,7 @@
 const pug = require('pug');
 const path = require('path');
 // todo: 修复路径 1
-const errorTips = require('../../config/errorTips.json');
+const errorConfigs = require('@/settings/env').configs.error;
 const errorTemplatePath = path.resolve(
   __dirname,
   '../../pages/error/errorTemplate.pug',
@@ -21,7 +21,7 @@ function getErrorPage404(url, message = '') {
   return getErrorPage(
     '404 Not Found',
     message || '糟糕！你访问的页面 404 了，请检查链接。',
-    errorTips.NotFound,
+    errorConfigs.NotFound,
     url,
   );
 }
@@ -30,7 +30,7 @@ function getErrorPage500(url, message = '') {
   return getErrorPage(
     '500 Internal Server Error',
     message || '服务器内部错误',
-    errorTips.InternalServerError,
+    errorConfigs.InternalServerError,
     url,
   );
 }

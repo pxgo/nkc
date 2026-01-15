@@ -14,7 +14,7 @@ const Broker = new Moleculer.ServiceBroker({
   logger: {
     type: 'File',
     options: {
-      folder: path.resolve(__dirname, '../../logs'),
+      folder: path.resolve(__dirname, '../../../logs'),
       filename: 'moleculer-{date}.log',
       formatter: 'json',
       eol: '\n',

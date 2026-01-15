@@ -459,7 +459,6 @@ function APP_nkc_render(options){
 
       case 'mp4'://these are standards
       case 'webm':
-      case 'ogg':
       replaced =
       '<a href="https://www.kechuang.org/r/'+rid+'" >'+oname_safe+'</a><br><video src="https://www.kechuang.org/r/'+rid+'" controls style="width:100%;" preload="none">你的浏览器可能不支持video标签播放视频。升级吧。</video>';
       // replaced = '<img src="http://192.168.11.114:1086/frameImg/'+ rid  +'">';

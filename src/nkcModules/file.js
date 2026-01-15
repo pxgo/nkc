@@ -30,7 +30,7 @@ const breakpointExtensions = ['mp4', 'mp3', 'pdf'];
  * */
 async function getStoreUrl(t) {
   // todo: 修复路径 1
-  const attachmentConfig = require('../../config/attachment.json');
+  const attachmentConfig = require('@/settings/env').configs.attachment;
   const now = t ? new Date(t).getTime() : Date.now();
   let storeUrl;
   for (const a of attachmentConfig) {

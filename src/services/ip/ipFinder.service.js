@@ -10,9 +10,7 @@ class IPFinderService {
   // 获取详细地址信息
   getIpInfo = async (ip) => {
     if (this.cityLookup === null) {
-      this.cityLookup = await maxmind.open(
-        path.resolve(__dirname, configs.geo.dbFilePath),
-      );
+      this.cityLookup = await maxmind.open(configs.geo.dbFilePath);
     }
     const geo = ip ? this.cityLookup.get(ip) : null;
     let country = '';

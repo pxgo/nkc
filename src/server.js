@@ -8,7 +8,9 @@ process.on('uncaughtException', function (err) {
 require('colors');
 const http = require('http');
 const dbStatus = require('./settings/dbStatus');
-const { port: NKCPort, host: NKCHost } = require('./nkcModules/config');
+const serverConfigs = require('./settings/env').configs.server;
+const NKCPort = serverConfigs.port;
+const NKCHost = serverConfigs.address;
 const { initEvents } = require('./events');
 
 const start = async () => {

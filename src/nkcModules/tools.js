@@ -7,9 +7,10 @@ var Tools = function () {
     var fileDomain;
     if (isNode) {
       // todo: 修复路径 1
-      fileDomain = require('../../config/server').fileDomain;
+      // 这里前后端公共，不能使用路径别名
+      fileDomain = require('../settings/env').configs.server.fileDomain;
     } else {
-      fileDomain = NKC.configs.fileDomain;
+      fileDomain = window.NKC.configs.fileDomain;
     }
     fileDomain = fileDomain || '';
     if (['', undefined, null].includes(id)) {

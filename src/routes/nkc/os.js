@@ -1,6 +1,6 @@
 const router = require('koa-router')();
 // todo: 修复路径 1
-const { attachment } = require('../../../config/store.json');
+const storeConfigs = require('@/settings/env').configs.store;
 const { OnlyOperation } = require('../../middlewares/permission');
 const { Operations } = require('../../settings/operations');
 router.get(
@@ -11,7 +11,7 @@ router.get(
     const { usage } = await nkcModules.os.getCPUInfo();
     const { totalMemMb, usedMemMb } = await nkcModules.os.getMemoryInfo();
     const disks = [];
-    for (const a of attachment) {
+    for (const a of storeConfigs.attachment) {
       const { free, size, diskPath } = await nkcModules.os.getDriveInfo(a.path);
       const disk = {
         ...a,

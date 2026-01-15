@@ -1,7 +1,7 @@
 const Router = require('koa-router');
 const router = new Router();
 // todo: 修复路径 1
-const serverConfig = require('../../../../config/server');
+const serverConfigs = require('@/settings/env').configs.server;
 const { renderHTMLByJSON } = require('../../../nkcModules/nkcRender/json');
 const { getJsonStringTextSlice } = require('../../../nkcModules/json');
 const { OnlyUser } = require('../../../middlewares/permission');
@@ -29,7 +29,7 @@ router
       columnId: column._id,
     });
     data.columnSettings = await db.SettingModel.getSettings('column');
-    data.pageUrl = `${serverConfig.domain}/m/${column._id}/page/`;
+    data.pageUrl = `${serverConfigs.domain}/m/${column._id}/page/`;
     if (t === 'add') {
       ctx.template = 'columns/settings/editPage.pug';
     } else if (t === 'edit') {

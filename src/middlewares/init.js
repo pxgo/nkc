@@ -7,7 +7,7 @@ const db = require('../dataModels');
 const { logger } = nkcModules;
 const fs = require('fs');
 const fsPromise = fs.promises;
-const redis = require('../redis');
+const { redisService } = require('@/services/redis/redis.service');
 // todo: 修复路径 1
 const errorTips = require('../../config/errorTips.json');
 const { getErrorPage404, getErrorPage500 } = require('../nkcModules/errorPage');
@@ -88,7 +88,9 @@ module.exports = async (ctx, next) => {
     ctx.body = ctx.request.body;
     ctx.db = db;
     ctx.tools = tools;
-    ctx.redis = redis;
+    ctx.redis = {
+      cacheForums: redisService.cacheForums,
+    };
     ctx.settings = settings;
     ctx.fs = fsSync;
     ctx.fsPromise = fsPromise;

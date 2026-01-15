@@ -1,5 +1,5 @@
 // todo: 修复路径 1
-const wechatPayConfigs = require('../../../config/wechatPay.json');
+const wechatPayConfigs = require('@/settings/env').configs.wechatPay;
 const { getRandomString } = require('../apiFunction');
 const fs = require('fs');
 const crypto = require('crypto');

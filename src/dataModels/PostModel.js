@@ -2091,7 +2091,10 @@ postSchema.statics.renderSinglePostToHTML = async (pid) => {
   if (!parentCommentId) {
     postData = (await PostModel.filterPostsInfo([postData]))[0];
     html = render(
-      PATH.resolve(__dirname, `../pages/thread/singlePost/singlePostPage.pug`),
+      PATH.resolve(
+        __dirname,
+        `../../pages/thread/singlePost/singlePostPage.pug`,
+      ),
       { postData },
       {},
       { startTime },
@@ -2101,7 +2104,7 @@ postSchema.statics.renderSinglePostToHTML = async (pid) => {
     html = render(
       PATH.resolve(
         __dirname,
-        `../pages/thread/singleComment/singleCommentPage.pug`,
+        `../../pages/thread/singleComment/singleCommentPage.pug`,
       ),
       { postData },
       {},

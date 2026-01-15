@@ -1,5 +1,5 @@
 // todo: 修复路径 1
-const { proxy, maxIpsCount } = require('../../config/server.json');
+const { proxy, maxIpsCount } = require('@/settings/env').configs.server;
 module.exports = (props) => {
   let {
     remoteIp: ip,
