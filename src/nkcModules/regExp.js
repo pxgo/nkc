@@ -263,7 +263,7 @@ const topLevelDomain = [
   'idv',
 ];
 // todo: 修复路径 1
-const { domain, domainWhitelist } = require('../settings/env').configs.server;
+const { domain, domainWhitelist } = require('@/settings/env').configs.server;
 
 const domainReg = new RegExp(
   `^` + domain.replace(/\//g, '\\/').replace(/\./g, '\\.') + '|^/',

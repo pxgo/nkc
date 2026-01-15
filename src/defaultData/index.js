@@ -25,7 +25,7 @@ async function initConfig() {
 async function initAccount() {
   // 创建管理员账号
   // todo: 修复路径 1
-  const accountConfig = require('../../config/account.json');
+  const accountConfig = require('@/settings/env').configs.account;
   const db = require('../dataModels');
   const count = await db.UserModel.countDocuments();
   if (count !== 0) {

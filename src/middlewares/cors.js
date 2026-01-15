@@ -1,6 +1,6 @@
 const cors = require('@koa/cors');
 // todo: 修复路径 1
-const serverConfig = require('../../config/server');
+const serverConfig = require('@/settings/env').configs.server;
 
 function normalizeOrigin(origin) {
   if (!origin) {

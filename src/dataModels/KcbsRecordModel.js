@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 // todo: 修复路径 1
-const serverConfig = require('../../config/server.json');
+const serverConfig = require('@/settings/env').configs.server;
 const alipay2 = require('../nkcModules/alipay2');
 const kcbsRecordSchema = new Schema(
   {

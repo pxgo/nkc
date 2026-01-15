@@ -9,12 +9,12 @@ const fs = require('fs');
 const fsPromise = fs.promises;
 const { redisService } = require('@/services/redis/redis.service');
 // todo: 修复路径 1
-const errorTips = require('../../config/errorTips.json');
+const errorTips = require('@/settings/env').configs.error;
 const { getErrorPage404, getErrorPage500 } = require('../nkcModules/errorPage');
 const { ErrorTypes } = require('../nkcModules/error');
 const { translateResponseType } = require('../nkcModules/translate');
 const apiRouteReg = /^\/api\/v[0-9]+/;
-const { isDevelopment } = require('../settings/env');
+const { isDevelopment } = require('@/settings/env');
 
 const fsSync = {
   access: fsPromise.access,

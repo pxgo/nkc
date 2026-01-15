@@ -1,7 +1,7 @@
 // todo: 修复路径 1
-const { domain, reserveDomain = [] } = require('../../config/server');
-const { fileDownload } = require('../settings/operationGroups');
-const { isProduction } = require('../settings/env');
+const { domain, reserveDomain = [] } = require('@/settings/env').configs.server;
+const { fileDownload } = require('@/settings/operationGroups');
+const { isProduction } = require('@/settings/env');
 const domainHost = new URL(domain).host;
 const reserveDomainHost = reserveDomain.map((d) => new URL(d).host);
 module.exports = async (ctx, next) => {

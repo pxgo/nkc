@@ -1,6 +1,6 @@
 const Cookies = require('cookies-string-parse');
 const jwt = require('jsonwebtoken');
-const { isDevelopment } = require('../settings/env');
+const { isDevelopment } = require('@/settings/env');
 // todo: 修复路径 1
 const cookieConfig = require('@/settings/env').configs.cookie;
 const KeyGrip = require('keygrip');

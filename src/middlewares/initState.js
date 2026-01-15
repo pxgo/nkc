@@ -2,7 +2,7 @@ const nkcModules = require('../nkcModules');
 const settings = require('../settings');
 const db = require('../dataModels');
 // todo: 修复路径 1
-const serverConfig = require('../../config/server');
+const serverConfig = require('@/settings/env').configs.server;
 module.exports = async (ctx, next) => {
   ctx.state = {
     logoICO: nkcModules.tools.getUrl('siteIcon', 'ico'),

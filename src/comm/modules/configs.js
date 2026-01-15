@@ -1,16 +1,16 @@
 // todo: 修复路径 1
-const commConfig = require('../../../config/comm.json');
+const moleculer = require('@/settings/env').configs.moleculer;
 function GetWebConfigs() {
   return {
-    enabled: commConfig.moleculer.web.enabled,
-    host: commConfig.moleculer.web.host,
-    port: commConfig.moleculer.web.port,
+    enabled: moleculer.web.enabled,
+    host: moleculer.web.host,
+    port: moleculer.web.port,
   };
 }
 
 function GetMoleculerConfigs() {
   return {
-    ...commConfig.moleculer,
+    ...moleculer,
   };
 }
 

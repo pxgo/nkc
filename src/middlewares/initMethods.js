@@ -1,6 +1,6 @@
 // todo: 修复路径 1
-const cookieConfig = require('../../config/cookie');
-const { isProduction } = require('../settings/env');
+const cookieConfig = require('@/settings/env').configs.cookie;
+const { isProduction } = require('@/settings/env');
 module.exports = async (ctx, next) => {
   // 权限判断
   // @param {String} o 操作名
