@@ -5,8 +5,8 @@
 const logger = require('./nkcModules/logger');
 const updateDate = require('./settings/updateDate');
 const { processId } = require('./settings/env');
-const jobs = require('./timedTasks/scheduleJob');
-const timedTasks = require('./timedTasks/timedTasks');
+const jobs = require('./schedules/scheduleJob');
+const timedTasks = require('./schedules/timedTasks');
 const dbStatus = require('./settings/dbStatus');
 const run = async () => {
   // 以下任务固定时间执行
@@ -38,7 +38,7 @@ const run = async () => {
   }
   process.on('message', function (msg) {
     if (msg === 'shutdown') {
-      logger.error(`timed task service ${processId} stopped`);
+      logger.error(`Schedule service ${processId} stopped`);
       process.exit(0);
     }
   });
@@ -46,10 +46,10 @@ const run = async () => {
 
 run()
   .then(() => {
-    logger.info(`timed task is running`);
+    logger.info(`Schedule service ${processId} is running`);
   })
   .catch((err) => {
-    logger.error(`timed task stopped`);
+    logger.error(`Schedule service ${processId} stopped`);
     logger.error(err.stack || err.message || err);
     process.exit(1);
   });

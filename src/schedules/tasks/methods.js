@@ -1,12 +1,15 @@
-const db = require('../dataModels');
+const db = require('../../dataModels');
 const methods = {};
 methods.updateForumsMessage = db.ForumModel.updateForumsMessage;
-methods.saveAllForumLatestThreadToRedis = db.ForumModel.saveAllForumLatestThreadToRedis;
+methods.saveAllForumLatestThreadToRedis =
+  db.ForumModel.saveAllForumLatestThreadToRedis;
 methods.clearResourceState = db.ResourceModel.clearResourceState;
-methods.updateHomeRecommendThreadsByType = db.ThreadModel.updateHomeRecommendThreadsByType;
+methods.updateHomeRecommendThreadsByType =
+  db.ThreadModel.updateHomeRecommendThreadsByType;
 methods.clearTimeoutPageCache = db.CacheModel.clearTimeoutPageCache;
 methods.saveActiveUsersToCache = db.ActiveUserModel.saveActiveUsersToCache;
 methods.saveNewUsersToCache = db.ActiveUserModel.saveNewUsersToCache;
-methods.updateVerifiedUpdateState = db.VerifiedUploadModel.updateVerifiedUpdateState;
+methods.updateVerifiedUpdateState =
+  db.VerifiedUploadModel.updateVerifiedUpdateState;
 methods.updateShopStatus = db.ShopOrdersModel.updateShopStatus;
 module.exports = methods;

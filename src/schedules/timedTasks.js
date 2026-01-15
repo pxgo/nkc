@@ -1,5 +1,5 @@
 const db = require('../dataModels');
-const tasks = require('../tasks');
+const tasks = require('./tasks');
 const logger = require('../nkcModules/logger');
 const {
   communityCountService,

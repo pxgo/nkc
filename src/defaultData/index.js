@@ -1,26 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 const apiFunction = require('../nkcModules/apiFunction');
-const fsPromises = fs.promises;
-const defaultConfigPath = path.resolve(__dirname, './config');
-const configPath = path.resolve(__dirname, `../config`);
-
-async function initConfig() {
-  // 初始化 config 文件
-  const dir = await fsPromises.readdir(defaultConfigPath);
-  await fsPromises.mkdir(configPath, {
-    recursive: true,
-  });
-  for (const f of dir) {
-    const defaultFilePath = path.resolve(defaultConfigPath, `./${f}`);
-    const targetFilePath = path.resolve(configPath, `./${f}`);
-    const stat = await fsPromises.stat(defaultFilePath);
-    if (stat.isFile() && !fs.existsSync(targetFilePath)) {
-      console.log(`creating config '${targetFilePath}'`);
-      await fsPromises.copyFile(defaultFilePath, targetFilePath);
-    }
-  }
-}
 
 async function initAccount() {
   // 创建管理员账号
@@ -397,7 +377,6 @@ async function initSensitiveSettings() {
 }
 
 async function init() {
-  await initConfig();
   await initSettings();
   await initAccount();
   await initRoles();
@@ -405,7 +384,6 @@ async function init() {
   await initScoreOperations();
   await initUsersGrades();
   await initMessages();
-  // await initOperations();
   await initForum();
   await initThreads();
   await initComplaintType();
@@ -419,7 +397,6 @@ async function init() {
 
 module.exports = {
   init,
-  initConfig,
   initForum,
   initSettings,
   initRoles,

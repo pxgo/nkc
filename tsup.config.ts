@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/**/*.{ts,js}'],
+  entry: ['src/**/*.{ts,js,json}'],
   bundle: false,
   format: ['cjs'],
   target: 'es2022',
