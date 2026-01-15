@@ -2,7 +2,6 @@ const { scheduleJob } = require('node-schedule');
 const fs = require('fs');
 const fsPromise = fs.promises;
 const path = require('path');
-require('colors');
 const db = require('../dataModels');
 const {
   PostModel,

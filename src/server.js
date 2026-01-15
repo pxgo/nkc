@@ -5,7 +5,6 @@ process.on('uncaughtException', function (err) {
   logger.info(err.stack || err.message || err);
 });
 
-require('colors');
 const http = require('http');
 const dbStatus = require('./settings/dbStatus');
 const serverConfigs = require('./settings/env').configs.server;

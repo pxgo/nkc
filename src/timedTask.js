@@ -2,8 +2,6 @@
  * 定时任务 独立进程执行
  * */
 
-require('colors');
-
 const logger = require('./nkcModules/logger');
 const updateDate = require('./settings/updateDate');
 const { processId } = require('./settings/env');

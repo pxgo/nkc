@@ -1,4 +1,3 @@
-require('colors');
 const { ForumModel, RoleModel, UsersGradeModel } = require('../../dataModels');
 import client from '@/settings/redisClient';
 const db = require('../../dataModels');

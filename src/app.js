@@ -1,6 +1,5 @@
 const mainRouter = require('./routes');
 const Koa = require('koa');
-require('colors');
 const loggerModule = require('./nkcModules/logger');
 const path = require('path');
 const koaBody = require('koa-body');
