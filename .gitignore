@@ -38,3 +38,5 @@
 /configs.production.yaml
 
 /backup
+
+/tsconfig.tsbuildinfo
