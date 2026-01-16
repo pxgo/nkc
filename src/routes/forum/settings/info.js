@@ -1,5 +1,8 @@
 const Router = require('koa-router');
 const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
+const {
   OnlyUser,
   OnlyUnbannedUser,
   OnlyOperation,
@@ -109,7 +112,9 @@ infoRouter
       fid: { $ne: forum.fid },
       displayName,
     });
-    if (sameName) ctx.throw(400, '专业名称已存在');
+    if (sameName) {
+      ctx.throw(400, '专业名称已存在');
+    }
     checkString(abbr, {
       name: '专业简称',
       minLength: 1,
@@ -118,7 +123,9 @@ infoRouter
       fid: { $ne: forum.fid },
       abbr,
     });
-    if (sameName) ctx.throw(400, '专业简称已存在');
+    if (sameName) {
+      ctx.throw(400, '专业简称已存在');
+    }
     checkString(brief, {
       name: '专业简介',
       minLength: 0,
@@ -160,21 +167,23 @@ infoRouter
     if (logoFile) {
       logoFile.name = `${Date.now()}.png`;
       data.logo = (
-        await db.AttachmentModel.saveForumImage(
-          forum.fid,
-          'forumLogo',
-          logoFile,
-        )
+        await attachmentService.saveForumImage({
+          uid: ctx.state.uid,
+          fid: forum.fid,
+          type: 'forumLogo',
+          file: logoFile,
+        })
       )._id;
     }
     if (bannerFile) {
       bannerFile.name = `${Date.now()}.png`;
       data.banner = (
-        await db.AttachmentModel.saveForumImage(
-          forum.fid,
-          'forumBanner',
-          bannerFile,
-        )
+        await attachmentService.saveForumImage({
+          uid: ctx.state.uid,
+          fid: forum.fid,
+          type: 'forumBanner',
+          file: bannerFile,
+        })
       )._id;
     }
 

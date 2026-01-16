@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const { OnlyOperation } = require('../../../middlewares/permission');
 const { Operations } = require('../../../settings/operations');
 const settingsRouter = new Router();
@@ -37,9 +40,12 @@ settingsRouter
     const files = body.files;
     const { fund: oldFund } = data;
     const { checkString, checkNumber } = nkcModules.checkData;
-    if (newFund._id !== oldFund._id) ctx.throw(400, `数据错误，请刷新后再试`);
-    if (!['system', 'person'].includes(newFund.auditType))
+    if (newFund._id !== oldFund._id) {
+      ctx.throw(400, `数据错误，请刷新后再试`);
+    }
+    if (!['system', 'person'].includes(newFund.auditType)) {
       ctx.throw(400, `请选择审核方式`);
+    }
     checkString(newFund.name, {
       name: '基金名称',
       minLength: 1,
@@ -87,8 +93,9 @@ settingsRouter
       min: 0,
     });
     for (const t of newFund.applicantType) {
-      if (!['personal', 'team'].includes(t))
+      if (!['personal', 'team'].includes(t)) {
         ctx.throw(400, `项目设置 - 申请方式数据错误`);
+      }
     }
     checkNumber(newFund.thread.count, {
       name: '项目设置 - 附带文章数',
@@ -129,8 +136,9 @@ settingsRouter
     for (const po of permissionOptions) {
       const { certs, appointed } = newFund[po[0]];
       for (const c of certs) {
-        if (!rolesId.includes(c))
+        if (!rolesId.includes(c)) {
           ctx.throw(400, `权限设置 - ${po[1]}证书数据错误`);
+        }
       }
       if (appointed.length !== 0) {
         const users = await db.UserModel.find(
@@ -199,13 +207,15 @@ settingsRouter
     );
     const newImage = {};
     if (files.avatar) {
-      newImage.avatar = await db.AttachmentModel.saveFundImage(
+      newImage.avatar = await attachmentService.saveFundImage(
+        ctx.state.uid,
         files.avatar,
         'fundAvatar',
       );
     }
     if (files.banner) {
-      newImage.banner = await db.AttachmentModel.saveFundImage(
+      newImage.banner = await attachmentService.saveFundImage(
+        ctx.state.uid,
         files.banner,
         'fundBanner',
       );

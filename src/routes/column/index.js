@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const editorRouter = require('./editor');
 const {
   columnNameCheckerService,
@@ -231,8 +234,8 @@ router
     });
     await column.save();
     await category.save();
-    await db.AttachmentModel.saveColumnAvatar(column._id, avatar);
-    await db.AttachmentModel.saveColumnBanner(column._id, banner);
+    await attachmentService.saveColumnAvatar(ctx.state.uid, column._id, avatar);
+    await attachmentService.saveColumnBanner(ctx.state.uid, column._id, banner);
     data.column = column;
     await db.ColumnModel.toSearch(column._id);
     await next();

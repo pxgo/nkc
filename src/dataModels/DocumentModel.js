@@ -369,7 +369,10 @@ schema.statics.createStableDocumentByStableHistoryDocument = async (
   await document.save();
   await document.updateResourceReferences();
   if (coverFile) {
-    await AttachmentModel.saveDocumentCover(document._id, coverFile);
+    const {
+      attachmentService,
+    } = require('@/services/attachment/attachment.service');
+    await attachmentService.saveDocumentCover(uid, document._id, coverFile);
   }
   return document;
 };
@@ -454,7 +457,10 @@ schema.statics.createBetaDocument = async (props) => {
   await document.save();
   await document.updateResourceReferences();
   if (coverFile) {
-    await AttachmentModel.saveDocumentCover(document._id, coverFile);
+    const {
+      attachmentService,
+    } = require('@/services/attachment/attachment.service');
+    await attachmentService.saveDocumentCover(uid, document._id, coverFile);
   }
   return document;
 };
@@ -828,7 +834,14 @@ schema.statics.updateDocumentByDid = async (did, props) => {
   const _betaDocument = await DocumentModel.findOnly({ _id: betaDocument._id });
   await _betaDocument.updateResourceReferences();
   if (coverFile) {
-    await AttachmentModel.saveDocumentCover(betaDocument._id, coverFile);
+    const {
+      attachmentService,
+    } = require('@/services/attachment/attachment.service');
+    await attachmentService.saveDocumentCover(
+      betaDocument.uid,
+      betaDocument._id,
+      coverFile,
+    );
   }
 };
 

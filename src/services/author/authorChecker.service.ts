@@ -1,7 +1,22 @@
-const { formCheckerService } = require('../checker/formChecker.service.js');
-const UserModel = require('../../dataModels/UserModel');
+import { formCheckerService } from '@/services/checker/formChecker.service';
+import { ThrowCommonError } from '@/nkcModules/error';
+import UserModel from '@/dataModels/UserModel';
+
 class AuthorCheckerService {
-  checkAuthorInfo = async (authorInfo) => {
+  checkAuthorInfo = async (authorInfo: {
+    familyName: string;
+    givenName: string;
+    introduction: string;
+    kcid: string;
+    orcid: string;
+    agencyName: string;
+    agencyAddress: string;
+    agencyDOI: string;
+    email: string;
+    tel: string;
+    address: string;
+    postalCode: string;
+  }) => {
     const {
       familyName,
       givenName,
@@ -11,7 +26,6 @@ class AuthorCheckerService {
       agencyName,
       agencyAddress,
       agencyDOI,
-      contact,
       email,
       tel,
       address,
@@ -35,7 +49,7 @@ class AuthorCheckerService {
     if (kcid) {
       const count = await UserModel.countDocuments({ uid: kcid });
       if (count === 0) {
-        throw new Error('KCID不存在');
+        ThrowCommonError(400, 'KCID不存在');
       }
     }
     if (orcid) {
@@ -54,30 +68,26 @@ class AuthorCheckerService {
       minLength: 0,
       maxLength: 300,
     });
-    if (contact) {
-      formCheckerService.checkString(email, {
-        name: '电子邮箱',
-        minLength: 1,
-        maxLength: 100,
+    formCheckerService.checkString(email, {
+      name: '电子邮箱',
+      minLength: 1,
+      maxLength: 100,
+    });
+    formCheckerService.checkEmailFormat(email);
+    if (tel) {
+      formCheckerService.checkTelephoneNumberFormat(tel);
+    }
+    if (address) {
+      formCheckerService.checkString(address, {
+        name: '地址',
+        minLength: 0,
+        maxLength: 300,
       });
-      formCheckerService.checkEmailFormat(email);
-      if (tel) {
-        formCheckerService.checkTelephoneNumberFormat(tel);
-      }
-      if (address) {
-        formCheckerService.checkString(address, {
-          name: '地址',
-          minLength: 0,
-          maxLength: 300,
-        });
-      }
-      if (postalCode) {
-        formCheckerService.checkPostalCodeFormat(postalCode);
-      }
+    }
+    if (postalCode) {
+      formCheckerService.checkPostalCodeFormat(postalCode);
     }
   };
 }
 
-module.exports = {
-  authorCheckerService: new AuthorCheckerService(),
-};
+export const authorCheckerService = new AuthorCheckerService();

@@ -1,6 +1,9 @@
 const Router = require('koa-router');
 const { OnlyOperation } = require('../../../../middlewares/permission');
 const { Operations } = require('../../../../settings/operations');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const router = new Router();
 router
   .get(
@@ -53,8 +56,9 @@ router
       const scoresType = await db.SettingModel.getScoresType();
       const submitScoresType = scores.map((s) => s.type);
       const enabledScoreTypes = [];
-      if (submitScoresType.length !== scoresType.length)
+      if (submitScoresType.length !== scoresType.length) {
         ctx.throw(400, '积分数据错误，请刷新后重试');
+      }
 
       for (const score of scores) {
         const scoreType = score.type;
@@ -76,12 +80,17 @@ router
           maxLength: 20,
         });
 
-        if (!scoresType.includes(scoreType))
+        if (!scoresType.includes(scoreType)) {
           ctx.throw(400, '积分数据错误，请刷新后重试');
-        if (score.enabled) enabledScoreTypes.push(scoreType);
+        }
+        if (score.enabled) {
+          enabledScoreTypes.push(scoreType);
+        }
       }
       for (const operationName in operationScores) {
-        if (!operationScores.hasOwnProperty(operationName)) continue;
+        if (!operationScores.hasOwnProperty(operationName)) {
+          continue;
+        }
         if (!enabledScoreTypes.includes(scoreSettings[operationName])) {
           ctx.throw(
             400,
@@ -96,13 +105,15 @@ router
           cycle,
           count,
         };
-        if (!['day'].includes(cycle))
+        if (!['day'].includes(cycle)) {
           ctx.throw(400, '积分策略中的周期设置错误');
+        }
         checkNumber(count, {
           name: '积分策略中的次数',
         });
-        if (count < 0 && count !== -1)
+        if (count < 0 && count !== -1) {
           ctx.throw(400, '积分策略中的次数只能为-1或非负整数');
+        }
         for (const scoreType of scoresType) {
           checkNumber(operation[scoreType], {
             name: '积分策略中的加减积分值',
@@ -128,7 +139,9 @@ router
         min: 1,
         fractionDigits: 2,
       });
-      if (creditMin > creditMax) ctx.throw(400, '鼓励金额设置错误');
+      if (creditMin > creditMax) {
+        ctx.throw(400, '鼓励金额设置错误');
+      }
 
       await db.SettingModel.updateOne(
         { _id: 'score' },
@@ -141,8 +154,10 @@ router
       await db.SettingModel.saveSettingsToRedis('score');
       for (const scoreType of scoresType) {
         const file = files[scoreType];
-        if (!file) continue;
-        await db.AttachmentModel.saveScoreIcon(file, scoreType);
+        if (!file) {
+          continue;
+        }
+        await attachmentService.saveScoreIcon(ctx.state.uid, file, scoreType);
       }
       await next();
     },

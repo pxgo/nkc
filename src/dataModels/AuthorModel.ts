@@ -1,4 +1,25 @@
-const mongoose = require('../settings/database');
+import mongoose from '@/settings/database';
+import { CustomModel } from '@/types/mongo';
+import { Document } from 'mongoose';
+
+export interface IAuthorData extends Document {
+  toc: Date;
+  uid: string;
+  familyName: string;
+  givenName: string;
+  instrodution: string;
+  photo: string;
+  orcid: string;
+  kcid: string;
+  email: string;
+  tel: string;
+  postalCode: string;
+  address: string;
+  agencyName: string;
+  agencyDOI: string;
+  agencyAddress: string;
+}
+
 const schema = new mongoose.Schema(
   {
     toc: {
@@ -34,11 +55,6 @@ const schema = new mongoose.Schema(
     kcid: {
       type: String,
       default: '',
-    },
-    // 是否显示联系方式
-    contact: {
-      type: Boolean,
-      default: false,
     },
     email: {
       type: String,
@@ -77,4 +93,7 @@ const schema = new mongoose.Schema(
   },
 );
 
-module.exports = mongoose.model('authors', schema);
+export const AuthorModel = mongoose.model<
+  IAuthorData,
+  CustomModel<IAuthorData>
+>('authors', schema);

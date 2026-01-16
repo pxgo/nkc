@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const { OnlyOperation } = require('../../../../middlewares/permission');
 const { Operations } = require('../../../../settings/operations');
 const router = new Router();
@@ -35,18 +38,25 @@ router
         subscribesDisplayMode,
         latestFirst,
       } = body;
-      if (!['home', 'latest'].includes(visitorThreadList))
+      if (!['home', 'latest'].includes(visitorThreadList)) {
         ctx.throw(400, `参数visitorThreadList错误：${visitorThreadList}`);
+      }
       const { postCount, postUserCount } = hotThreads;
-      if (postCount < 0) ctx.throw(400, '热门文章最小回复数不能小于0');
-      if (postUserCount < 0)
+      if (postCount < 0) {
+        ctx.throw(400, '热门文章最小回复数不能小于0');
+      }
+      if (postUserCount < 0) {
         ctx.throw(400, '热门文章最小回复用户总数不能小于0');
-      if (recommend.voteUpTotal < 0)
+      }
+      if (recommend.voteUpTotal < 0) {
         ctx.throw(400, '推荐条件中的点赞总数不能小于0');
-      if (recommend.voteUpMax < 0)
+      }
+      if (recommend.voteUpMax < 0) {
         ctx.throw(400, '推荐条件中的独立点赞数不能小于0');
-      if (recommend.encourageTotal < 0)
+      }
+      if (recommend.encourageTotal < 0) {
         ctx.throw(400, '推荐条件中的鼓励总数不能小于0');
+      }
       await db.SettingModel.updateOne(
         { _id: 'home' },
         {
@@ -85,7 +95,10 @@ router
         data.saved = [];
         for (let key in files) {
           const file = files[key];
-          let attachment = await db.AttachmentModel.saveHomeBigLogo(file);
+          let attachment = await attachmentService.saveHomeBigLogo(
+            ctx.state.uid,
+            file,
+          );
           data.saved.push({
             aid: attachment._id,
             url: nkcModules.tools.getUrl('homeBigLogo', attachment._id),

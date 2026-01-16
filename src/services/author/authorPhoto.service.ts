@@ -1,14 +1,17 @@
-const AttachmentModel = require('../../dataModels/AttachmentModel');
-const FILE = require('../../nkcModules/file');
+import FILE from '@/nkcModules/file';
+import { ICtxFile } from '@/types/ctx';
+import { attachmentService } from '@/services/attachment/attachment.service';
+
 class AuthorPhotoService {
-  saveAuthorPhoto = async (file) => {
+  saveAuthorPhoto = async (uid: string, file: ICtxFile) => {
     const ext = await FILE.getFileExtension(file, ['jpg', 'jpeg', 'png']);
-    const aid = await AttachmentModel.getNewId();
+    const aid = await attachmentService.getNewId();
     const time = new Date();
-    const attachment = await AttachmentModel.createAttachmentAndPushFile({
+    const attachment = await attachmentService.createAttachmentAndPushFile({
       aid,
       file,
       ext,
+      uid,
       sizeLimit: 20 * 1024 * 1024,
       time,
       type: 'authorPhoto',
@@ -22,7 +25,7 @@ class AuthorPhotoService {
         },
       ],
     });
-    return attachment.aid;
+    return attachment._id;
   };
 }
 

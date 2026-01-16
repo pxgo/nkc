@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const customCheerio = require('../../nkcModules/nkcRender/customCheerio');
 const { renderHTMLByJSON } = require('../../nkcModules/nkcRender/json');
 const { getJsonStringTextSlice } = require('../../nkcModules/json');
@@ -410,8 +413,11 @@ draftsRouter
       }
     }
     if (files && files.postCover) {
-      await db.AttachmentModel.saveDraftCover(draft.did, files.postCover);
-      // await nkcModules.file.saveDraftCover(draft.did, files.postCover);
+      await attachmentService.saveDraftCover(
+        ctx.state.uid,
+        draft.did,
+        files.postCover,
+      );
     }
     if (draft) {
       const oldDraft = await db.DraftModel.findOne({

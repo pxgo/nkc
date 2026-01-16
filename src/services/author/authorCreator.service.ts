@@ -1,6 +1,23 @@
-const AuthorModel = require('../../dataModels/AuthorModel');
+import { AuthorModel } from '@/dataModels/AuthorModel';
 class AuthorCreatorService {
-  createAuthor = async (uid, authorInfo) => {
+  createAuthor = async (
+    uid: string,
+    authorInfo: {
+      familyName: string;
+      givenName: string;
+      introduction: string;
+      kcid: string;
+      orcid: string;
+      agencyName: string;
+      agencyAddress: string;
+      agencyDOI: string;
+      contact: string;
+      email: string;
+      tel: string;
+      address: string;
+      postalCode: string;
+    },
+  ) => {
     const count = await AuthorModel.countDocuments({ uid });
     if (count >= 20) {
       throw new Error('每个用户最多只能创建20个作者信息');
@@ -42,6 +59,4 @@ class AuthorCreatorService {
   };
 }
 
-module.exports = {
-  authorCreatorService: new AuthorCreatorService(),
-};
+export const authorCreatorService = new AuthorCreatorService();

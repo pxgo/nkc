@@ -1,4 +1,7 @@
 const { OnlyOperation } = require('../../../../middlewares/permission');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const { Operations } = require('../../../../settings/operations');
 
 const router = require('koa-router')();
@@ -97,7 +100,7 @@ router
         },
       );
       if (icon) {
-        await db.AttachmentModel.saveOAuthAppIcon(oid, icon);
+        await attachmentService.saveOAuthAppIcon(ctx.state.uid, oid, icon);
       }
 
       await next();
@@ -110,7 +113,9 @@ router
       const { db, params } = ctx;
       const { oid } = params;
       const oauth = await db.OAuthAppModel.find({ _id: oid });
-      if (!oauth) ctx.throw(400, '第三方应用不存在');
+      if (!oauth) {
+        ctx.throw(400, '第三方应用不存在');
+      }
       const appStatus = await db.OAuthAppModel.getAppStatus();
       await db.OAuthAppModel.update(
         { _id: oid },
@@ -127,7 +132,9 @@ router
       const { status } = body;
       const { oid } = params;
       const oauth = await db.OAuthAppModel.find({ _id: oid });
-      if (!oauth) ctx.throw(400, '第三方应用不存在');
+      if (!oauth) {
+        ctx.throw(400, '第三方应用不存在');
+      }
       await db.OAuthAppModel.update({ _id: oid }, { status });
       await next();
     },
@@ -140,7 +147,9 @@ router
       const { oid } = params;
       const appSecret = await db.OAuthAppModel.createAppSecret();
       const oauth = await db.OAuthAppModel.find({ _id: oid });
-      if (!oauth) ctx.throw(400, '第三方应用不存在');
+      if (!oauth) {
+        ctx.throw(400, '第三方应用不存在');
+      }
       await db.OAuthAppModel.updateOne({ _id: oid }, { secret: appSecret });
       await next();
     },

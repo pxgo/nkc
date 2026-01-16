@@ -1,4 +1,7 @@
 const router = require('koa-router')();
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const { Public } = require('../../middlewares/permission');
 const AUDIT_TYPES = {
   userAvatarAudit: 'avatar',
@@ -10,8 +13,9 @@ router.get('/:id', Public(), async (ctx, next) => {
   const { id } = params;
   const { t } = query;
   const { user } = data;
-  if (t && !['sm', 'lg', 'md', 'ico'].includes(t))
+  if (t && !['sm', 'lg', 'md', 'ico'].includes(t)) {
     ctx.throw(400, '未知的文件尺寸');
+  }
   const attachment = await db.AttachmentModel.findOne({ _id: id });
   if (!attachment || attachment.disabled) {
     ctx.filePath = settings.statics.defaultAvatarPath;
@@ -42,7 +46,7 @@ router.get('/:id', Public(), async (ctx, next) => {
   }
 
   // 其余情况，返回真实文件
-  ctx.remoteFile = await attachment.getRemoteFile(t);
+  ctx.remoteFile = await attachmentService.getRemoteFile(attachment, t);
   return await next();
 });
 module.exports = router;

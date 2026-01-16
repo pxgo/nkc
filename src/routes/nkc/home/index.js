@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const router = new Router();
 const blockRouter = require('./block');
 const nkcRender = require('../../../nkcModules/nkcRender');
@@ -217,7 +220,8 @@ router
     const { body, data, db } = ctx;
     const { topType } = body.fields;
     const { cover } = body.files;
-    data.coverHash = await db.AttachmentModel.saveRecommendThreadCover(
+    data.coverHash = await attachmentService.saveRecommendThreadCover(
+      ctx.state.uid,
       cover,
       topType,
     );

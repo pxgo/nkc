@@ -1,7 +1,23 @@
 const mongoose = require('../../settings/database');
 const AuthorModel = require('../../dataModels/AuthorModel');
 class AuthorUpdaterService {
-  async updateAuthorInfo(id, authorInfo) {
+  async updateAuthorInfo(
+    id: string,
+    authorInfo: {
+      familyName: string;
+      givenName: string;
+      introduction: string;
+      kcid: string;
+      orcid: string;
+      agencyName: string;
+      agencyAddress: string;
+      agencyDOI: string;
+      email: string;
+      tel: string;
+      address: string;
+      postalCode: string;
+    },
+  ) {
     const {
       familyName,
       givenName,
@@ -11,7 +27,6 @@ class AuthorUpdaterService {
       agencyName,
       agencyAddress,
       agencyDOI,
-      contact,
       email,
       tel,
       address,
@@ -29,7 +44,6 @@ class AuthorUpdaterService {
           agencyName,
           agencyAddress,
           agencyDOI,
-          contact,
           email,
           tel,
           address,
@@ -39,11 +53,9 @@ class AuthorUpdaterService {
     );
   }
 
-  async deleteAuthorById(uid, id) {
+  async deleteAuthorById(uid: string, id: string) {
     await AuthorModel.deleteOne({ uid, _id: new mongoose.Types.ObjectId(id) });
   }
 }
 
-module.exports = {
-  authorUpdaterService: new AuthorUpdaterService(),
-};
+export const authorUpdaterService = new AuthorUpdaterService();

@@ -1,6 +1,8 @@
 const { OnlyOperation } = require('../../../../middlewares/permission');
 const { Operations } = require('../../../../settings/operations');
-
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const router = require('koa-router')();
 
 router
@@ -40,7 +42,7 @@ router
       operations,
       ips,
     });
-    await db.AttachmentModel.saveOAuthAppIcon(app._id, icon);
+    await attachmentService.saveOAuthAppIcon(ctx.state.uid, app._id, icon);
     await next();
   });
 module.exports = router;

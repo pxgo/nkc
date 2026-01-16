@@ -1,7 +1,7 @@
 const { ForumModel, RoleModel, UsersGradeModel } = require('../../dataModels');
 import client from '@/settings/redisClient';
 const db = require('../../dataModels');
-const tasks = require('../../tasks');
+const tasks = require('../../schedules/tasks');
 import { sensitiveSettingService } from '@/services/sensitive/sensitiveSetting.service';
 import { sensitiveCheckerService } from '@/services/sensitive/sensitiveChecker.service';
 class RedisService {

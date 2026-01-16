@@ -1,4 +1,5 @@
 const mongoose = require('../settings/database');
+const { ThrowCommonError } = require('@/nkcModules/error');
 const Schema = mongoose.Schema;
 const messageFileSchema = new Schema(
   {
@@ -138,7 +139,7 @@ messageFileSchema.statics.createMessageFileDataAndPushFile = async (props) => {
   await MessageModel.checkFileSize(file);
   const ext = await FILE.getFileExtension(file);
   if (['exe', 'bat'].includes(ext)) {
-    ctx.throw(403, `暂不支持上传该类型的文件`);
+    ThrowCommonError(403, `暂不支持上传该类型的文件`);
   }
   const type = await MessageFileModel.getFileTypeByExtension(ext, isVoice);
   const mfId = await SettingModel.operateSystemID('messageFiles', 1);

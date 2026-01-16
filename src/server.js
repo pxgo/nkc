@@ -33,7 +33,7 @@ const start = async () => {
 
     // 启动测试环境相关工具
     if (isDevelopment) {
-      require('./timedTask');
+      require('./schedule');
     }
 
     process.on('message', async function (msg) {

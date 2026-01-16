@@ -3,6 +3,9 @@ const {
   userDescCheckerService,
 } = require('../../../services/user/userDescChecker.service');
 const infoRouter = new Router();
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const { OnlyUnbannedUser } = require('../../../middlewares/permission');
 const {
   usernameCheckerService,
@@ -64,7 +67,7 @@ infoRouter.put('info', OnlyUnbannedUser(), async (ctx, next) => {
   await user.save();
   //改头像
   if (avatarFile) {
-    const { _id } = await db.AttachmentModel.saveUserAudit(
+    const { _id } = await attachmentService.saveUserAudit(
       user.uid,
       avatarFile,
       'userAvatar',
@@ -72,7 +75,7 @@ infoRouter.put('info', OnlyUnbannedUser(), async (ctx, next) => {
     userAudit.avatar = _id;
   }
   if (bannerFile) {
-    const { _id } = await db.AttachmentModel.saveUserAudit(
+    const { _id } = await attachmentService.saveUserAudit(
       user.uid,
       bannerFile,
       'userBanner',
@@ -80,7 +83,7 @@ infoRouter.put('info', OnlyUnbannedUser(), async (ctx, next) => {
     userAudit.banner = _id;
   }
   if (homeBannerFile) {
-    const { _id } = await db.AttachmentModel.saveUserAudit(
+    const { _id } = await attachmentService.saveUserAudit(
       user.uid,
       homeBannerFile,
       'userHomeBanner',

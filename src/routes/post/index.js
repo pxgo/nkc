@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const quote = require('./quote');
 const history = require('./history');
 const credit = require('./credit');
@@ -540,8 +543,7 @@ router
     await targetPost.save();
 
     if (targetThread.oc === pid && files && files.postCover) {
-      await db.AttachmentModel.savePostCover(pid, files.postCover);
-      // await ctx.nkcModules.file.savePostCover(pid, files.postCover);
+      await attachmentService.savePostCover(pid, files.postCover);
     }
     if (
       !isModerator &&

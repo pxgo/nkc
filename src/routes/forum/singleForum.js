@@ -1,4 +1,7 @@
 const subscribeRouter = require('./subscribe');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const settingsRouter = require('./settings');
 const homeRouter = require('./home');
 const latestRouter = require('./latest');
@@ -166,9 +169,9 @@ router
     // 根据thread生成封面图
     const thread = await db.ThreadModel.findOne({ tid: _post.tid });
     if (files.postCover) {
-      await db.AttachmentModel.savePostCover(_post.pid, files.postCover);
+      await attachmentService.savePostCover(_post.pid, files.postCover);
     } else if (!_post.cover) {
-      await db.AttachmentModel.savePostCover(_post.pid);
+      await attachmentService.savePostCover(_post.pid);
     }
 
     // 转发到专栏

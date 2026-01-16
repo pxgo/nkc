@@ -1,6 +1,9 @@
 const Router = require('koa-router');
 const router = new Router();
 const { OnlyOperation } = require('../../middlewares/permission');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const { Operations } = require('../../settings/operations');
 router.post('/', OnlyOperation(Operations.clearUserInfo), async (ctx, next) => {
   const { db, body, params } = ctx;
@@ -16,7 +19,7 @@ router.post('/', OnlyOperation(Operations.clearUserInfo), async (ctx, next) => {
         },
       },
     );
-    await db.AttachmentModel.disableAttachment(targetUser.avatar);
+    await attachmentService.disableAttachment(targetUser.avatar);
   } else if (type === 'banner') {
     await db.UserModel.updateOne(
       { uid: targetUser.uid },
@@ -27,8 +30,8 @@ router.post('/', OnlyOperation(Operations.clearUserInfo), async (ctx, next) => {
         },
       },
     );
-    await db.AttachmentModel.disableAttachment(targetUser.banner);
-    await db.AttachmentModel.disableAttachment(targetUser.homeBanner);
+    await attachmentService.disableAttachment(targetUser.banner);
+    await attachmentService.disableAttachment(targetUser.homeBanner);
   } else if (type === 'username') {
     await db.UserModel.clearUsername({
       uid: targetUser.uid,

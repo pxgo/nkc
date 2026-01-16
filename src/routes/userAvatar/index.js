@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const router = new Router();
 const { OnlyUser } = require('../../middlewares/permission');
 router
@@ -17,7 +20,7 @@ router
     if (!file) {
       ctx.throw(400, 'no file uploaded');
     }
-    const attachment = await db.AttachmentModel.saveUserAvatar(uid, file);
+    const attachment = await attachmentService.saveUserAvatar(uid, file);
     user.avatar = attachment._id;
     await next();
   });

@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const addRouter = new Router();
 const { Public } = require('../../middlewares/permission');
 addRouter
@@ -88,7 +91,7 @@ addRouter
     }
     await newProblem.save();
     if (images && images.length > 0) {
-      await db.AttachmentModel.saveProblemImages(_id, images);
+      await attachmentService.saveProblemImages(ctx.state.uid, _id, images);
     }
     await next();
   });

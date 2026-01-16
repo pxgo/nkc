@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const router = new Router();
 const categoryRouter = require('./category');
 const settingsRouter = require('./settings');
@@ -387,10 +390,18 @@ router
         users: JSON.parse(users),
       });
       if (avatar) {
-        await db.AttachmentModel.saveColumnAvatar(column._id, avatar);
+        await attachmentService.saveColumnAvatar(
+          ctx.state.uid,
+          column._id,
+          avatar,
+        );
       }
       if (banner) {
-        await db.AttachmentModel.saveColumnBanner(column._id, banner);
+        await attachmentService.saveColumnBanner(
+          ctx.state.uid,
+          column._id,
+          banner,
+        );
       }
       await db.ColumnModel.toSearch(column._id);
     } else if (type === 'color') {

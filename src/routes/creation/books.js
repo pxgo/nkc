@@ -1,17 +1,20 @@
 const router = require('koa-router')();
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 router
   .get('/', async (ctx, next) => {
-    const {db, state, data} = ctx;
+    const { db, state, data } = ctx;
     data.books = await db.BookModel.getBooksByUserId(state.uid);
     data.otherBooks = await db.BookModel.getOtherBooksByUserId(state.uid);
     await next();
   })
   .get('/editor', async (ctx, next) => {
     //获取图书设置
-    const {db, data, query, nkcModules, state} = ctx;
-    const {bid} = query;
-    const book = await db.BookModel.findOnly({_id: bid});
-    const {timeFormat, getUrl} = nkcModules.tools;
+    const { db, data, query, nkcModules, state } = ctx;
+    const { bid } = query;
+    const book = await db.BookModel.findOnly({ _id: bid });
+    const { timeFormat, getUrl } = nkcModules.tools;
     data.bookData = {
       _id: book._id,
       name: book.name,
@@ -25,26 +28,20 @@ router
     const adminPermissions = await db.BookModel.getAdminPermissions();
     const memberPermissions = await db.BookModel.getMemberPermissions();
     data.rolePermission = {
-      admin: adminPermissions.map(p => state.lang('bookPermissions', p)),
-      member: memberPermissions.map(p => state.lang('bookPermissions', p))
+      admin: adminPermissions.map((p) => state.lang('bookPermissions', p)),
+      member: memberPermissions.map((p) => state.lang('bookPermissions', p)),
     };
     await next();
   })
   .post('/editor', async (ctx, next) => {
     //提交图书设置
-    const {state, body, db, data} = ctx;
-    const {files, fields} = body;
-    const {cover} = files;
-    let {
-      name,
-      description,
-      bookId,
-      members,
-      read,
-    } = JSON.parse(fields.book);
+    const { state, body, db, data } = ctx;
+    const { files, fields } = body;
+    const { cover } = files;
+    let { name, description, bookId, members, read } = JSON.parse(fields.book);
     let book;
-    if(bookId) {
-      book = await db.BookModel.findOnly({_id: bookId});
+    if (bookId) {
+      book = await db.BookModel.findOnly({ _id: bookId });
     } else {
       read = 'self';
     }
@@ -55,20 +52,24 @@ router
       read,
     };
     await db.BookModel.checkBookInfo(bookInfo);
-    if(!book) {
+    if (!book) {
       book = await db.BookModel.createBook(bookInfo);
     } else {
       //新创作成员
       const newMembersObj = {};
-      for(const m of members) {
-        if(m.uid === state.uid) continue;
+      for (const m of members) {
+        if (m.uid === state.uid) {
+          continue;
+        }
         newMembersObj[m.uid] = m;
       }
       //原创作成员
       const bookMembers = book.members;
-      for(const bm of bookMembers) {
+      for (const bm of bookMembers) {
         const newBm = newMembersObj[bm._id];
-        if(!newBm) continue;
+        if (!newBm) {
+          continue;
+        }
         bm.role = newBm.role;
       }
       await book.updateOne({
@@ -76,12 +77,12 @@ router
           name,
           description,
           members: bookMembers,
-          read
-        }
+          read,
+        },
       });
     }
-    if(cover) {
-      await db.AttachmentModel.saveBookCover(book._id, cover);
+    if (cover) {
+      await attachmentService.saveBookCover(ctx.state.uid, book._id, cover);
     }
     data.bookId = book._id;
     await next();

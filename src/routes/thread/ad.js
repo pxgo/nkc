@@ -1,4 +1,7 @@
 const Router = require('koa-router');
+const {
+  attachmentService,
+} = require('@/services/attachment/attachment.service');
 const homeTopRouter = new Router();
 const { OnlyOperation } = require('../../middlewares/permission');
 const { Operations } = require('../../settings/operations');
@@ -66,7 +69,8 @@ homeTopRouter
       minLength: 1,
       maxLength: 500,
     });
-    const aid = await db.AttachmentModel.saveRecommendThreadCover(
+    const aid = await attachmentService.saveRecommendThreadCover(
+      ctx.state.uid,
       cover,
       topType,
     );
