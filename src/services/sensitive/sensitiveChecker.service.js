@@ -14,10 +14,7 @@ const { Eve } = require('node-threads-pool');
 const { sensitiveCheckerStatus } = require('../../settings/sensitiveChecker');
 const { sensitiveTypes } = require('../../settings/sensitiveSetting');
 class SensitiveCheckerService {
-  #checkerThread = new Eve(
-    path.resolve(__dirname, './sensitiveChecker.thread.js'),
-    2,
-  );
+  #checkerThread = null;
   async #createNewCheckerLog(props) {
     const { uid, type } = props;
     const log = new SensitiveCheckerLogModel({
@@ -35,11 +32,21 @@ class SensitiveCheckerService {
       uid,
       type,
     });
+    if (!this.#checkerThread) {
+      this.#checkerThread = new Eve(
+        path.resolve(__dirname, './sensitiveChecker.thread.js'),
+        1,
+      );
+    }
     this.#checkerThread
       .run({
         logId: log._id.toString(),
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => {
+        this.#checkerThread.destroy();
+        this.#checkerThread = null;
+      });
   }
   async getSensitiveCheckerLogs(page) {
     const count = await SensitiveCheckerLogModel.countDocuments();

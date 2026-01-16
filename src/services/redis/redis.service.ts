@@ -1,9 +1,9 @@
 const { ForumModel, RoleModel, UsersGradeModel } = require('../../dataModels');
 import client from '@/settings/redisClient';
 const db = require('../../dataModels');
-const tasks = require('../../schedules/tasks');
 import { sensitiveSettingService } from '@/services/sensitive/sensitiveSetting.service';
 import { sensitiveCheckerService } from '@/services/sensitive/sensitiveChecker.service';
+
 class RedisService {
   /*
    * 启动时缓存必要数据到redis
@@ -24,8 +24,7 @@ class RedisService {
     // 专业分类
     await db.ForumCategoryModel.saveCategoryToRedis();
     // 专业最新文章
-    // await db.ForumModel.saveAllForumLatestThreadToRedisAsync();
-    await tasks.saveAllForumLatestThreadToRedis();
+    await db.ForumModel.saveAllForumLatestThreadToRedis();
     // 后台设置
     await db.SettingModel.saveAllSettingsToRedis();
     // 操作权限
@@ -52,16 +51,24 @@ class RedisService {
     const canDisplayOnNavForumsIdNCC = [];
 
     const forums = await ForumModel.find();
-    const rolesDB = await RoleModel.find();
-    const gradesDB = await UsersGradeModel.find();
+    const rolesDB = (await RoleModel.find()) as { _id: string }[];
+    const gradesDB = (await UsersGradeModel.find()) as { _id: string }[];
 
     const rolesDBIds = rolesDB.map((role) => role._id);
     const gradesDBIds = gradesDB.map((grade) => grade._id);
 
-    const roles = {};
-    const grades = {};
-    const rolesAndGrades = {};
-    const moderators = {};
+    const roles: {
+      [key: string]: string[];
+    } = {};
+    const grades: {
+      [key: string]: string[];
+    } = {};
+    const rolesAndGrades: {
+      [key: string]: string[];
+    } = {};
+    const moderators: {
+      [key: string]: string[];
+    } = {};
 
     // 构建变量
     rolesDB.map((role) => {
@@ -83,12 +90,16 @@ class RedisService {
         fid,
       } = forum;
 
-      let { rolesId, gradesId, relation } = forum.permission.read;
+      let { rolesId, gradesId, relation } = forum.permission.read as {
+        rolesId: string[];
+        gradesId: string[];
+        relation: string;
+      };
       rolesId = rolesId.filter((roleId) => rolesDBIds.includes(roleId));
       gradesId = gradesId.filter((gradeId) => gradesDBIds.includes(gradeId));
 
       // 专家
-      forum.moderators.map((uid) => {
+      (forum.moderators as string[]).map((uid) => {
         if (!moderators[uid]) {
           moderators[uid] = [];
         }
@@ -163,25 +174,25 @@ class RedisService {
 
     // 获取下级专业
     for (const forum of forums) {
-      const allChildForumsId = [];
-      const allChildForums = [];
-      const parentForumsId = [];
-      const parentForums = [];
+      const allChildForumsId: string[] = [];
+      const allChildForums: any[] = [];
+      const parentForumsId: string[] = [];
+      const parentForums: string[] = [];
 
       // 获取子专业
-      const getChildForumId = (f) => {
+      const getChildForumId = (f: any) => {
         for (const childForum of f.childForums) {
           if (allChildForumsId.includes(childForum.fid)) {
             continue;
           }
           allChildForumsId.push(childForum.fid);
           allChildForums.push(childForum);
-          getChildForumId(childForum);
+          getChildForumId(childForum as any);
         }
       };
 
       // 获取父专业
-      const getParentForumId = (f) => {
+      const getParentForumId = (f: any) => {
         if (f.parentsId.length === 0) {
           return;
         }
