@@ -839,19 +839,6 @@ fn.extendManagementInfo = async (ctx) => {
     data.unReviewedCount = count;
   }
 };
-// 获取config文件内容，实时刷新
-fn.getConfigByName = async (name) => {
-  const configPath = path.resolve(__dirname, `../../config/${name}.json`);
-  return new Promise((resolve, reject) => {
-    fs.readFile(configPath, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(JSON.parse(data.toString()));
-      }
-    });
-  });
-};
 /*
  * 打乱数组元素顺序
  * @param {Array} array 数组
