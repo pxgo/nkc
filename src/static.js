@@ -1,4 +1,4 @@
-const { program } = require('commander');
+const { Command } = require('commander');
 const path = require('path');
 const KOA = require('koa');
 const http = require('http');
@@ -8,12 +8,15 @@ const corsMiddleware = require('./middlewares/cors');
 const koaStaticCache = require('koa-static-cache');
 const koaStatic = require('koa-static');
 
+const program = new Command();
+program.allowUnknownOption(true);
+
 program
   .option('-p, --port <number>', 'Server port(default 1086)', '1086')
   .option('--host <char>', 'Server host(default 0.0.0.0)', '0.0.0.0')
   .option('-a, --age <char>', 'max age(default 2592000)', '2592000')
-  .option('-d, --dir [dirs...]', 'target directory(default ./)', './')
-  .option('-m, --mem-dir [dirs...]', 'memory-cache directories', []);
+  .option('-d, --dir <dirs...>', 'target directory(default ./)', ['./'])
+  .option('-m, --mem-dir <dirs...>', 'memory-cache directories', []);
 
 program.parse();
 

@@ -1,6 +1,6 @@
 import path from 'path';
 import { IConfigs } from '../types/configs';
-import { program } from 'commander';
+import { Command } from 'commander';
 import fs from 'fs';
 import { parse as yamlParse } from 'yaml';
 // 配置的node环境变量，默认为生产环境
@@ -24,6 +24,9 @@ try {
 const configs = yamlParse(
   fs.readFileSync(configsFilePath).toString(),
 ) as IConfigs;
+
+const program = new Command();
+program.allowUnknownOption(true);
 
 // 命令行参数 host, port 优先级最高
 program
