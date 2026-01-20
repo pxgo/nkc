@@ -184,6 +184,11 @@ module.exports = {
           DELETE: Operations.deleteUserAuthor,
         },
       },
+      references: {
+        GET: Operations.getUserReferences,
+        POST: Operations.createUserReference,
+        DELETE: Operations.deleteUserReference,
+      },
     },
   },
 };

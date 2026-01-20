@@ -16,6 +16,7 @@ class AuthorCreatorService {
       tel: string;
       address: string;
       postalCode: string;
+      photo: string;
     },
   ) => {
     const count = await AuthorModel.countDocuments({ uid });
@@ -36,6 +37,7 @@ class AuthorCreatorService {
       tel,
       address,
       postalCode,
+      photo,
     } = authorInfo;
     const author = new AuthorModel({
       uid,
@@ -53,6 +55,7 @@ class AuthorCreatorService {
       tel,
       address,
       postalCode,
+      photo,
     });
     await author.save();
     return author;

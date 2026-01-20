@@ -27,6 +27,8 @@
             :l="pageData.post.l",
             @content-change="contentChange"
           )
+        .m-b-2
+          references  
         .m-b-2  
           .mb-2 基础信息
           metadata(

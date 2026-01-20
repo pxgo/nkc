@@ -23,17 +23,33 @@ const getDefaultMetadata = () => ({
   lang: 'zh_CN',
   authors: [],
   abstract: '',
-  keywords: ['中国', '日本'],
+  keywords: [],
   title: '',
   description: '',
   content: '',
+  contact: false,
 });
 
 export class EditorStore {
   state = window.Vue.observable({
     // 元信息
     metadata: [{ ...getDefaultMetadata() }],
+    // 参考文献
+    references: [],
   });
+
+  setReferences = (references) => {
+    this.state.references = [...references];
+  };
+
+  addReferences = (references) => {
+    this.state.references = [...this.state.references, ...references];
+  };
+
+  removeReferenceAt = (index) => {
+    this.state.references.splice(index, 1);
+    this.state.references = [...this.state.references];
+  };
 
   // 设置作者信息列表
   setAuthors = (metadataIndex, authors) => {
@@ -51,6 +67,16 @@ export class EditorStore {
   // 删除指定位置的作者信息
   removeAuthorAt = (metadataIndex, authorIndex) => {
     this.state.metadata[metadataIndex].authors.splice(authorIndex, 1);
+  };
+
+  // 切换指定作者的通讯作者标记
+  toggleAuthorContact = (metadataIndex, authorIndex) => {
+    const authors = this.state.metadata[metadataIndex].authors;
+    if (!authors || !authors[authorIndex]) {
+      return;
+    }
+    authors[authorIndex].contact = !authors[authorIndex].contact;
+    this.setAuthors(metadataIndex, authors);
   };
 
   // type: 'up' | 'down'

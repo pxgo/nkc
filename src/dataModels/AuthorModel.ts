@@ -3,6 +3,7 @@ import { CustomModel } from '@/types/mongo';
 import { Document } from 'mongoose';
 
 export interface IAuthorData extends Document {
+  _id: typeof mongoose.Types.ObjectId;
   toc: Date;
   uid: string;
   familyName: string;

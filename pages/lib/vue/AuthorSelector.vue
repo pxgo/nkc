@@ -74,7 +74,7 @@
       div.flex.justify-end.flex-row.px-2.pb-2(v-if='showEditor')
         div
           button.mr-2.btn.btn-default.btn-sm.mt-2(@click="hideEditor") 取消并返回
-          button.btn.btn-primary.btn-sm.mt-2(@click="save") 保存
+          button.btn.btn-primary.btn-sm.mt-2(@click="save" :disabled="submitting") 保存{{submitting?"中": ''}}
       div.flex.flex-row.justify-between.px-2.pb-2(v-else)
         div
           button.btn.btn-default.btn-sm.mt-2(@click="newAuthor") 新建作者

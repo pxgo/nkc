@@ -1,5 +1,5 @@
 const mongoose = require('../../settings/database');
-const AuthorModel = require('../../dataModels/AuthorModel');
+const { AuthorModel } = require('../../dataModels/AuthorModel');
 class AuthorUpdaterService {
   async updateAuthorInfo(
     id: string,
@@ -16,6 +16,7 @@ class AuthorUpdaterService {
       tel: string;
       address: string;
       postalCode: string;
+      photo: string;
     },
   ) {
     const {
@@ -31,6 +32,7 @@ class AuthorUpdaterService {
       tel,
       address,
       postalCode,
+      photo,
     } = authorInfo;
     await AuthorModel.updateOne(
       { _id: new mongoose.Types.ObjectId(id) },
@@ -48,6 +50,7 @@ class AuthorUpdaterService {
           tel,
           address,
           postalCode,
+          photo,
         },
       },
     );
