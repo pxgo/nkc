@@ -2,7 +2,7 @@
   .author-info
     author-selector(ref='authorSelector')
     .editor-header.mb-2 作者信息
-      small （选填，信息将公开显示）{{authors.length}}
+      small （选填，信息将公开显示）
     .editor-authors
       div(v-for="(author, index) of authors" :key="`author-info-${index}`")
         .panel.panel-default
@@ -18,6 +18,13 @@
           .panel-body
             .row
               .col-xs-12.col-md-6
+                div(v-if='author.photo' class='max-w-[100%] w-[150px] mb-2')
+                  img.img-responsive.pointer(
+                    :src="getUrl('authorPhoto', author.photo)" 
+                    alt="作者照片"
+                    data-global-click='viewImage' 
+                    :data-global-data="objToStr({name: 'author photo', url: getUrl('authorPhoto', author.photo)})"
+                     )
                 div(v-if='author.kcid') {{userIdName}}: 
                   a(:href="getUrl('userHome', author.kcid)" target="_blank") {{author.kcid}}
                 div(v-if='author.orcid') ORCID: 
@@ -40,6 +47,7 @@ import AuthorSelector from '../../../lib/vue/AuthorSelector.vue';
 import { sweetError } from '../../../lib/js/sweetAlert';
 import { getUrl } from '../../../lib/js/tools';
 import { editorStore } from '../../store/editor';
+import { objToStr } from '../../../lib/js/dataConversion';
 const state = getState();
 const websiteCode = state.websiteCode || 'KC';
 export default {
@@ -58,6 +66,7 @@ export default {
   inject: ['metadataIndex'],
   methods: {
     getUrl,
+    objToStr,
     deleteAuthor(index) {
       sweetQuestion('确定要删除该条作者信息？')
         .then(() => {

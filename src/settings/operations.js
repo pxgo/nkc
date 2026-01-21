@@ -466,11 +466,12 @@ const FixedOperations = {
   visitDOIContent: 'visitDOIContent',
   getUserAuthors: 'getUserAuthors',
   createUserAuthor: 'createUserAuthor',
-  modifyUserAuthor: 'modifyUserAuthor',
+  restoreUserAuthor: 'restoreUserAuthor',
   deleteUserAuthor: 'deleteUserAuthor',
   getUserReferences: 'getUserReferences',
   createUserReference: 'createUserReference',
   deleteUserReference: 'deleteUserReference',
+  restoreUserReference: 'restoreUserReference',
 };
 
 // 需要在后台配置给相应证书的操作，会经过全局的权限判断

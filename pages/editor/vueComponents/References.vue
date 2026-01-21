@@ -4,12 +4,14 @@
     .mb-2.flex.items-center.gap-x-2
       span 参考文献
       small （选填）
-      small.text-muted(v-if="references.length") 共 {{ references.length }} 条
     div(class="flex flex-col gap-y-2 mb-3")
       .panel.panel-default(v-for="(refItem, index) in references" :key="refItem._id || refItem.id || index")
         .panel-heading.flex.justify-between.items-center
           div.font-bold {{ refItem.title || '未命名' }}
-          button.btn.btn-xs.btn-danger(@click="removeReference(index)") 删除
+          .flex.gap-x-2
+            button.btn.btn-xs.btn-default(@click="moveReference(index, 'up')" :disabled="index === 0") 上移
+            button.btn.btn-xs.btn-default(@click="moveReference(index, 'down')" :disabled="index === references.length - 1") 下移
+            button.btn.btn-xs.btn-danger(@click="removeReference(index)") 删除
         .panel-body.text-gray-700
           div.mb-1 {{ formatAuthors(refItem.authors) }}
           div.mb-1
@@ -52,6 +54,17 @@ export default {
     removeReference(index) {
       const list = [...this.references];
       list.splice(index, 1);
+      editorStore.setReferences(list);
+    },
+    moveReference(index, type) {
+      const list = [...this.references];
+      const targetIndex = type === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= list.length) {
+        return;
+      }
+      const swap = list[targetIndex];
+      list[targetIndex] = list[index];
+      list[index] = swap;
       editorStore.setReferences(list);
     },
     formatAuthors(authors) {

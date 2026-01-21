@@ -1,7 +1,9 @@
-import { AuthorModel } from '@/dataModels/AuthorModel';
+import { AuthorModel, IAuthorStatus } from '@/dataModels/AuthorModel';
 class AuthorFinderService {
-  getAuthorsByUserId = async (userId: string) => {
-    return await AuthorModel.find({ uid: userId }).sort({ toc: -1 }).lean();
+  getAuthorsByUserId = async (userId: string, status: IAuthorStatus) => {
+    return await AuthorModel.find({ uid: userId, status })
+      .sort({ toc: -1 })
+      .lean();
   };
 }
 

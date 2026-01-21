@@ -57,7 +57,25 @@ class AuthorUpdaterService {
   }
 
   async deleteAuthorById(uid: string, id: string) {
-    await AuthorModel.deleteOne({ uid, _id: new mongoose.Types.ObjectId(id) });
+    await AuthorModel.updateOne(
+      { uid, _id: new mongoose.Types.ObjectId(id) },
+      {
+        $set: {
+          status: 'deleted',
+        },
+      },
+    );
+  }
+
+  async restoreAuthorById(uid: string, id: string) {
+    await AuthorModel.updateOne(
+      { uid, _id: new mongoose.Types.ObjectId(id) },
+      {
+        $set: {
+          status: 'normal',
+        },
+      },
+    );
   }
 }
 

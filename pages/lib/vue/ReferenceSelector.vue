@@ -1,6 +1,6 @@
 <template lang="pug">
   draggable-dialog(ref="dialog" title="参考文献" :width="'500px'" :height="'500px'" :heightXS="'80%'")
-    div(v-if='loading' class='flex flex-col h-full')
+    div(v-if='loading' class='flex flex-col h-full justify-center items-center')
       div 加载中...
     div(v-else-if='showEditor' class='flex flex-col h-full')
       div.p-4.flex-1(class='overflow-y-auto')
@@ -85,13 +85,20 @@
     
     div(v-else class='flex flex-col h-full')
       div(v-if='references.length === 0' class='flex-1 p-2 flex justify-center items-center flex-col') 
-        .mb-2 空空如也
-        div 请点击下方“新建参考文献”按钮添加参考文献。
+        template(v-if='!showRecycle')
+          .mb-2 空空如也
+          div 请点击下方“新建参考文献”按钮添加参考文献。
+        template(v-else)  
+          .mb-2 回收站为空
+          div 没有已删除的参考文献。
       div(v-else class='flex-1 p-2 flex flex-col gap-y-3 overflow-y-auto')
-        div.border.rounded.p-3.bg-white.shadow-sm.flex.gap-x-3.items-start(v-for='item in references' :key='item._id || item.id')
+        div.border.rounded.p-3.bg-white.shadow-sm.flex.gap-x-3.items-start(
+          v-for='item in references'
+          :key='item._id || item.id'
+        )
           div.w-6.flex-none
             label
-              input(type='checkbox' :value='item._id || item.id' v-model='selectedReferencesId')
+              input(type='checkbox' :value='item._id || item.id' v-model='selectedReferencesId' :disabled='showRecycle')
           div.flex-1
             div.font-bold.mb-1 {{ item.title || '未命名' }}
             div.text-gray-600.mb-1 {{ formatAuthors(item.authors) }}
@@ -107,19 +114,23 @@
             div.text-gray-600(v-else-if='item.school') 学校：{{ item.school }}
             div.text-gray-600(v-if='item.doi') DOI：{{ item.doi }}
             div.text-gray-600(v-if='item.url') URL：{{ item.url }}
+          div.flex-none
+            button.btn.btn-xs.btn-danger(v-if='!showRecycle' @click='deleteReference(item._id || item.id)') 删除
+            button.btn.btn-xs.btn-default(v-else @click='restoreReference(item._id || item.id)') 恢复
 
       div(class="flex justify-between items-center p-2")
         div.flex.gap-x-2.items-center
-          button.btn.btn-sm.btn-default(@click='newReference') 新建参考文献
+          button.btn.btn-sm.btn-default(@click='newReference' :disabled='showRecycle') 新建参考文献
+          button.btn.btn-sm.btn-default(@click='toggleRecycle') {{ showRecycle ? '返回列表' : '回收站' }}
         div.flex.items-center.gap-x-2
-          paging-component(v-if='paging.buttonValue && paging.buttonValue.length'
-            :pages='paging.buttonValue'
+          paging-component(v-if='(showRecycle ? recyclePaging.buttonValue : paging.buttonValue) && (showRecycle ? recyclePaging.buttonValue.length : paging.buttonValue.length)'
+            :pages='showRecycle ? recyclePaging.buttonValue : paging.buttonValue'
             :mt='0'
             :mb='0'
             @click-button='handlePageChange'
           )
           button.btn.btn-sm.btn-default(@click='close') 取消
-          button.btn.btn-sm.btn-primary(@click='confirmSelect') 确定
+          button.btn.btn-sm.btn-primary(@click='confirmSelect' :disabled='showRecycle') 确定
         
 </template>
 
@@ -127,7 +138,7 @@
 import DraggableDialog from './DraggableDialog/DraggableDialog.vue';
 import { nkcAPI } from '../js/netAPI';
 import Paging from './Paging.vue';
-import { sweetError } from '../js/sweetAlert';
+import { sweetError, sweetQuestion } from '../js/sweetAlert';
 const defaultForm = {
   type: 'journal',
   title: '',
@@ -149,8 +160,11 @@ export default {
     saving: false,
     callback: null,
     showEditor: false,
+    showRecycle: false,
     references: [],
+    recycleReferences: [],
     paging: { buttonValue: [] },
+    recyclePaging: { buttonValue: [] },
     selectedReferencesId: [],
     form: {
       ...defaultForm,
@@ -167,9 +181,14 @@ export default {
       this.$refs.dialog.open();
       this.getReferences();
     },
-    getReferences(page = 1) {
+    getReferences(page = 0) {
       this.loading = true;
-      nkcAPI('/api/v1/settings/references', 'GET', { page })
+      nkcAPI(
+        `/api/v1/settings/references?page=${page}&status=${
+          this.showRecycle ? 'deleted' : 'normal'
+        }`,
+        'GET',
+      )
         .then((res) => {
           const { references = [], paging = { buttonValue: [] } } = res.data;
           this.references = references;
@@ -232,13 +251,43 @@ export default {
       return map[type] || '其他';
     },
     handlePageChange(pageIndex) {
-      this.getReferences(pageIndex + 1);
+      this.getReferences(pageIndex);
     },
     confirmSelect() {
       if (this.callback) {
         this.callback(this.selectedReferences);
       }
       this.close();
+    },
+    deleteReference(referenceId) {
+      return sweetQuestion('确认删除该参考文献？删除后不可恢复！')
+        .then(() => {
+          return nkcAPI(
+            `/api/v1/settings/references?referenceId=${referenceId}`,
+            'DELETE',
+            {},
+          );
+        })
+        .then(() => {
+          return this.getReferences();
+        })
+        .catch(sweetError);
+    },
+    restoreReference(referenceId) {
+      return sweetQuestion('确认恢复该参考文献？')
+        .then(() => {
+          return nkcAPI(`/api/v1/settings/references/recover`, 'POST', {
+            referenceId,
+          });
+        })
+        .then(() => {
+          return this.getDeletedReferences();
+        })
+        .catch(sweetError);
+    },
+    toggleRecycle() {
+      this.showRecycle = !this.showRecycle;
+      this.getReferences();
     },
   },
   computed: {

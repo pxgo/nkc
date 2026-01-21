@@ -1,4 +1,4 @@
-import { AuthorModel } from '@/dataModels/AuthorModel';
+import { AuthorModel, IAuthorStatus } from '@/dataModels/AuthorModel';
 class AuthorCreatorService {
   createAuthor = async (
     uid: string,
@@ -17,11 +17,12 @@ class AuthorCreatorService {
       address: string;
       postalCode: string;
       photo: string;
+      status?: IAuthorStatus;
     },
   ) => {
     const count = await AuthorModel.countDocuments({ uid });
-    if (count >= 20) {
-      throw new Error('每个用户最多只能创建20个作者信息');
+    if (count >= 500) {
+      throw new Error('每个用户最多只能创建500个作者信息');
     }
     const {
       familyName,
@@ -38,6 +39,7 @@ class AuthorCreatorService {
       address,
       postalCode,
       photo,
+      status = 'normal',
     } = authorInfo;
     const author = new AuthorModel({
       uid,
@@ -56,6 +58,7 @@ class AuthorCreatorService {
       address,
       postalCode,
       photo,
+      status,
     });
     await author.save();
     return author;

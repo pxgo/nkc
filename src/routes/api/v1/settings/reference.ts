@@ -3,7 +3,7 @@ import * as Koa from 'koa';
 import { OnlyUser } from '@/middlewares/permission';
 import { referenceService } from '@/services/reference/reference.service';
 import { referenceCheckerService } from '@/services/reference/referenceChecker.service';
-import { IReferenceType } from '@/dataModels/ReferencesModel';
+import { IReferenceStatus, IReferenceType } from '@/dataModels/ReferencesModel';
 
 export const referenceRouter = new Router<
   Koa.DefaultState,
@@ -27,11 +27,13 @@ type IReferenceBody = {
 
 referenceRouter.get('/', OnlyUser(), async (ctx, next) => {
   const page = ctx.query.page ? parseInt(ctx.query.page as string, 10) : 0;
+  const status = (ctx.query.status as string) || 'normal';
   const perPage = 30;
   const { references, paging } = await referenceService.getReferences({
     uid: ctx.state.uid,
     page: page,
     perPage: perPage,
+    status: status as IReferenceStatus,
   });
   ctx.apiData = {
     references,
@@ -51,7 +53,7 @@ referenceRouter.post('/', OnlyUser(), async (ctx, next) => {
 });
 
 referenceRouter.del('/', OnlyUser(), async (ctx, next) => {
-  const reference = ctx.query.referenceId as string;
-  await referenceService.deleteReference(ctx.state.uid, reference);
+  const referenceId = ctx.query.referenceId as string;
+  await referenceService.deleteReference(ctx.state.uid, referenceId);
   await next();
 });

@@ -179,15 +179,14 @@ module.exports = {
       authors: {
         GET: Operations.getUserAuthors,
         POST: Operations.createUserAuthor,
-        PARAMETER: {
-          PATCH: Operations.modifyUserAuthor,
-          DELETE: Operations.deleteUserAuthor,
-        },
+        PATCH: Operations.restoreUserAuthor,
+        DELETE: Operations.deleteUserAuthor,
       },
       references: {
         GET: Operations.getUserReferences,
         POST: Operations.createUserReference,
         DELETE: Operations.deleteUserReference,
+        PATCH: Operations.restoreUserReference,
       },
     },
   },

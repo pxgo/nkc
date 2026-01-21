@@ -1,5 +1,5 @@
 <template lang="pug">
-  draggable-dialog(ref="dialog" title="选择作者" :width="'320px'" :height="'400px'" :heightXS="'80%'")
+  draggable-dialog(ref="dialog" title="选择作者" :width="'400px'" :height="'500px'" :heightXS="'80%'")
     .h-full.flex.flex-col
       .flex-1.w-full.flex.justify-center.items-center(v-if="loading") 加载中...
       .flex-1.w-full.overflow-y-auto.p-4(v-else-if='showEditor') 
@@ -52,32 +52,72 @@
           textarea.form-control(rows=2 v-model.trim="form.agencyAddress" placeholder="请输入机构地址")
 
           
-      .flex-1.w-full.flex.flex-col.justify-center.items-center(v-else-if='authors.length === 0') 
-        .mb-2 空空如也
-        div 请点击下方“新建作者”按钮添加作者。
+      .flex-1.w-full.flex.flex-col.justify-center.items-center(v-else-if='currentList.length === 0') 
+        template(v-if='!showRecycle')
+          .mb-2 空空如也
+          div 请点击下方“新建作者”按钮添加作者。
+        template(v-else)
+          .mb-2 回收站为空
+          div 没有已删除的作者。
       .flex-1.w-full.overflow-y-auto.flex.flex-col.gap-y-2.py-2(v-else)
         div(
-          v-for="(author, index) in authors" 
+          v-for="(author, index) in currentList" 
           :key="`author-${index}`" 
-          class="p-2 mx-2 flex border border-gray-300 rounded bg-gray-100" 
+          class="mx-2" 
           )
-          div.w-6.flex-none
-            label
-              input(type="checkbox" :value="author._id" v-model="selectedAuthorsId")
-          div
-            div.text-md {{author.familyName}} {{author.givenName}}
-            div.text-md {{author.agencyName}} {{author.agencyAddress}}
-            .mt-2
-              button.mr-2.btn.btn-xs.btn-default(@click="editAuthor(author)") 编辑    
-              button.btn.btn-xs.btn-danger(@click="deleteAuthor(author)") 删除
+          .panel.panel-default
+            .panel-heading.py-2.mb-0
+              div.flex.items-center
+                div.flex-1 {{author.familyName}} {{author.givenName}}
+                div.flex-none.gap-x-2.flex.items-center
+                  template(v-if="!showRecycle")
+                    button.btn.btn-xs.btn-default(@click="deleteAuthor(author)") 删除 
+                    button.btn.btn-xs(
+                      :class='selectedAuthorsId.includes(author._id)? "btn-primary": "btn-default"' 
+                      @click='selectAuthor(author)'
+                      ) {{selectedAuthorsId.includes(author._id) ? '已选择' : '选择'}}
+                  template(v-else)
+                    button.btn.btn-xs.btn-default(@click="restoreAuthor(author)") 恢复
+            .panel-body.flex.flex-col.gap-y-2
+              img(:src="getUrl('authorPhoto', author.photo)" alt="作者照片" class="w-full mb-2" v-if="author.photo")
+              .info-grid
+                div.info-row(v-if="author.kcid")
+                  span.info-label KCID
+                  span.info-value {{author.kcid}}
+                div.info-row(v-if="author.orcid")
+                  span.info-label ORCID
+                  span.info-value {{author.orcid}}
+                div.info-row(v-if="author.email")
+                  span.info-label 邮箱
+                  span.info-value {{author.email}}
+                div.info-row(v-if="author.tel")
+                  span.info-label 电话
+                  span.info-value {{author.tel}}
+                div.info-row(v-if="author.postalCode")
+                  span.info-label 邮编
+                  span.info-value {{author.postalCode}}
+                div.info-row(v-if="author.address")
+                  span.info-label 地址
+                  span.info-value {{author.address}}
+                div.info-row(v-if="author.agencyName")
+                  span.info-label 机构名称
+                  span.info-value {{author.agencyName}}
+                div.info-row(v-if="author.agencyAddress")
+                  span.info-label 机构地址
+                  span.info-value {{author.agencyAddress}}
+                div.info-row(v-if="author.agencyDOI")
+                  span.info-label 机构DOI
+                  span.info-value {{author.agencyDOI}}
+            
               
       div.flex.justify-end.flex-row.px-2.pb-2(v-if='showEditor')
         div
           button.mr-2.btn.btn-default.btn-sm.mt-2(@click="hideEditor") 取消并返回
           button.btn.btn-primary.btn-sm.mt-2(@click="save" :disabled="submitting") 保存{{submitting?"中": ''}}
       div.flex.flex-row.justify-between.px-2.pb-2(v-else)
-        div
-          button.btn.btn-default.btn-sm.mt-2(@click="newAuthor") 新建作者
+        div.flex.gap-x-2.items-center
+          button.btn.btn-default.btn-sm.mt-2(@click="newAuthor" :disabled="showRecycle") 新建作者
+          button.btn.btn-default.btn-sm.mt-2(@click="toggleRecycle") {{ showRecycle ? '返回列表' : '回收站' }}
         div
           button.mr-2.btn.btn-default.btn-sm.mt-2(@click="close") 取消  
           button.btn.btn-primary.btn-sm.mt-2(
@@ -101,8 +141,9 @@ import {
   checkUserORCIDNumber,
   checkTel,
 } from '../js/checkData.js';
-import { nkcUploadFile } from '../js/netAPI';
+import { nkcUploadFile, nkcAPI } from '../js/netAPI';
 import { sweetQuestion } from '../js/sweetAlert.js';
+import { getUrl } from '../js/tools.js';
 const defaultAuthor = {
   _id: '',
   familyName: '',
@@ -129,6 +170,7 @@ export default {
     return {
       loading: true,
       showEditor: false,
+      showRecycle: false,
       selectedAuthorsId: [],
       form: {
         ...defaultAuthor,
@@ -150,11 +192,16 @@ export default {
         this.selectedAuthorsId.includes(author._id),
       );
     },
+    currentList() {
+      return this.authors;
+    },
   },
   methods: {
+    getUrl,
     open(callback) {
       this.selectedAuthorsId = [];
       this.photoFile = null;
+      this.showRecycle = false;
       this.loadAuthors();
       this.callback = callback;
       this.$refs.dialog.open();
@@ -210,6 +257,15 @@ export default {
       }
     },
 
+    selectAuthor(author) {
+      const index = this.selectedAuthorsId.indexOf(author._id);
+      if (index === -1) {
+        this.selectedAuthorsId.push(author._id);
+      } else {
+        this.selectedAuthorsId.splice(index, 1);
+      }
+    },
+
     save() {
       return Promise.resolve()
         .then(() => {
@@ -246,6 +302,7 @@ export default {
         });
     },
 
+    // 编辑 暂时屏蔽
     editAuthor(author) {
       this.form = { ...author };
       this.showEditor = true;
@@ -254,7 +311,26 @@ export default {
     deleteAuthor(author) {
       return sweetQuestion('确认删除该作者？删除后不可恢复！')
         .then(() => {
-          return nkcAPI(`/api/v1/settings/authors/${author._id}`, 'DELETE', {});
+          return nkcAPI(
+            `/api/v1/settings/authors?authorId=${author._id}`,
+            'DELETE',
+            {},
+          );
+        })
+        .then(() => {
+          return this.loadAuthors();
+        })
+        .catch(sweetError);
+    },
+
+    restoreAuthor(author) {
+      return sweetQuestion('确认恢复该作者？')
+        .then(() => {
+          return nkcAPI(
+            `/api/v1/settings/authors?authorId=${author._id}`,
+            'PATCH',
+            {},
+          );
         })
         .then(() => {
           return this.loadAuthors();
@@ -267,11 +343,19 @@ export default {
       this.close();
     },
 
-    loadAuthors() {
+    toggleRecycle() {
+      this.showRecycle = !this.showRecycle;
+      this.selectedAuthorsId = [];
+      this.loadAuthors();
+    },
+
+    loadAuthors(page = 0) {
       this.loading = true;
-      return nkcAPI(`/api/v1/settings/authors`, 'GET')
+      const status = this.showRecycle ? 'deleted' : 'normal';
+      return nkcAPI(`/api/v1/settings/authors?status=${status}`, 'GET')
         .then((resp) => {
-          this.authors = resp.data.authors;
+          const { authors = [] } = resp.data;
+          this.authors = authors;
         })
         .catch((err) => {
           sweetError(err);
@@ -318,4 +402,27 @@ export default {
 };
 </script>
 
-<style lang="less"></style>
+<style lang="less" scoped>
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px 12px;
+}
+
+.info-row {
+  display: flex;
+  align-items: baseline;
+}
+
+.info-label {
+  width: 72px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.info-value {
+  flex: 1;
+  min-width: 0;
+  word-break: break-all;
+}
+</style>

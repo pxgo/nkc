@@ -324,6 +324,9 @@ var Tools = function () {
       case 'doi': {
         return 'https://doi.org/' + id;
       }
+      case 'authorPhoto': {
+        return '/a/' + id;
+      }
     }
   };
   self.getAnonymousInfo = function () {

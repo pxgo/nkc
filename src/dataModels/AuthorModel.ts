@@ -2,6 +2,8 @@ import mongoose from '@/settings/database';
 import { CustomModel } from '@/types/mongo';
 import { Document } from 'mongoose';
 
+export type IAuthorStatus = 'normal' | 'deleted';
+
 export interface IAuthorData extends Document {
   _id: typeof mongoose.Types.ObjectId;
   toc: Date;
@@ -19,10 +21,18 @@ export interface IAuthorData extends Document {
   agencyName: string;
   agencyDOI: string;
   agencyAddress: string;
+  status: IAuthorStatus;
 }
 
 const schema = new mongoose.Schema(
   {
+    status: {
+      type: String,
+      enum: ['normal', 'deleted'],
+      default: 'normal',
+      required: true,
+      index: 1,
+    },
     toc: {
       type: Date,
       required: true,
