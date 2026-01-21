@@ -24,10 +24,6 @@ const getDefaultMetadata = () => ({
   authors: [],
   abstract: '',
   keywords: [],
-  title: '',
-  description: '',
-  content: '',
-  contact: false,
 });
 
 export class EditorStore {
@@ -36,10 +32,19 @@ export class EditorStore {
     metadata: [{ ...getDefaultMetadata() }],
     // 参考文献
     references: [],
+    // 资助机构
+    funders: [],
+    // 文章说明
+    description: '',
   });
 
   setReferences = (references) => {
     this.state.references = [...references];
+  };
+
+  // 设置资助机构列表
+  setFunders = (funders) => {
+    this.state.funders = [...funders];
   };
 
   addReferences = (references) => {
@@ -113,8 +118,8 @@ export class EditorStore {
     this.state.metadata[metadataIndex].title = title;
   };
 
-  setDescription = (metadataIndex, description) => {
-    this.state.metadata[metadataIndex].description = description;
+  setDescription = (description) => {
+    this.state.description = description;
   };
 
   // 添加一组元信息

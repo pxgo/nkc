@@ -7,7 +7,7 @@
     div(class="flex flex-col gap-y-2 mb-3")
       .panel.panel-default(v-for="(refItem, index) in references" :key="refItem._id || refItem.id || index")
         .panel-heading.flex.justify-between.items-center
-          div.font-bold {{ refItem.title || '未命名' }}
+          div {{ refItem.title || '未命名' }}
           .flex.gap-x-2
             button.btn.btn-xs.btn-default(@click="moveReference(index, 'up')" :disabled="index === 0") 上移
             button.btn.btn-xs.btn-default(@click="moveReference(index, 'down')" :disabled="index === references.length - 1") 下移
