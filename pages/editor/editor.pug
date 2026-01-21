@@ -1,16 +1,16 @@
 extends ../bootstrap_base
 block title
-  title=data.reqUrl.typeCn
+  title= data.reqUrl.typeCn
   //- +includeCSS("/editor/editor.css")
   style.
-    .modifySubmit{
+    .modifySubmit {
       background: white;
       padding: 5px;
     }
-    .nkcshade{
+    .nkcshade {
       box-shadow: none;
     }
-    #app-publish-article{
+    #app-publish-article {
       /*background-color: #fff;*/
     }
 block content
@@ -18,7 +18,7 @@ block content
     .row
       .col-xs-12.box-shadow-panel
         #app-publish-article
-          editor(:req-url="reqUrl")
-  .hidden#data=objToStr(data.reqUrl)
+          editor(:req-url='reqUrl')
+  #data.hidden= objToStr(data.reqUrl)
 block scripts
-  +includeJS("/editor/editor.js")
+  +includeJS('/editor/editor.js')

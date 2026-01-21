@@ -3,7 +3,10 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const webpack = require('webpack');
 const globby = require('globby');
 const { VueLoaderPlugin } = require('vue-loader');
+const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const TS_CONFIG_PATH = path.resolve(__dirname, 'pages/tsconfig.json');
 
 // 输出文件夹
 const DIST_DIR = 'dist';
@@ -14,8 +17,9 @@ const COMPONENTS_DIR_PATTERN = '!pages/**/components';
 
 // js脚本文件入口
 const SCRIPTS_PATTERNS = [
-  './pages/**/*{.js,.jsx}',
+  './pages/**/*{.js,.jsx,.ts,.tsx}',
   // 排除以下路径
+  '!./pages/**/*.d.ts',
   LIB_DIR_PATTERN,
   COMPONENTS_DIR_PATTERN,
   SPA_DIR_PATTERN,
@@ -29,7 +33,11 @@ const STYLES_PATTERNS = [
 ];
 
 // 单页引用路径
-const SPA_PATTERNS = ['./pages/spa/index.js'];
+const SPA_PATTERNS = [
+  './pages/spa/index.js',
+  './pages/spa/index.ts',
+  './pages/spa/index.tsx',
+];
 
 const scriptFiles = globby.sync(SCRIPTS_PATTERNS);
 const styleFiles = globby.sync(STYLES_PATTERNS);
@@ -190,12 +198,28 @@ module.exports = {
         ],
       },
       {
+        test: /\.tsx?$/,
+        exclude: [/node_modules/, /\.d\.ts$/],
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              configFile: TS_CONFIG_PATH,
+              onlyCompileBundledFiles: true,
+              transpileOnly: true,
+              appendTsSuffixTo: [/\.vue$/],
+            },
+          },
+        ],
+      },
+      {
         test: /\.pug$/,
         use: ['pug-plain-loader'],
       },
     ],
   },
   plugins: [
+    new RemoveEmptyScriptsPlugin(),
     new VueLoaderPlugin(),
     /* new ESLintPlugin({
       extensions: '.vue',
@@ -217,10 +241,30 @@ module.exports = {
     }),
     // new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: true }), // 临时开启
   ],
+  optimization: {
+    minimize: isProduction,
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false,
+      }),
+    ],
+  },
   externals: {
     vue: 'Vue',
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.vue', '.json', '.less', '.css'],
+    alias: {
+      '@': path.resolve(__dirname, 'pages'),
+    },
+    extensions: [
+      '.ts',
+      '.tsx',
+      '.js',
+      '.jsx',
+      '.vue',
+      '.json',
+      '.less',
+      '.css',
+    ],
   },
 };

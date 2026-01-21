@@ -15,13 +15,13 @@
 *
 * */
 
-import Editor from "./vueComponents/Editor.vue";
+import Editor from './vueComponents/Editor.vue';
 new Vue({
-  el: "#app-publish-article",
+  el: '#app-publish-article',
   data: {
-    reqUrl: NKC.methods.getDataById("data")
+    reqUrl: NKC.methods.getDataById('data'),
   },
   components: {
-    editor: Editor
+    editor: Editor,
   },
 });

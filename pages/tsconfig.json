@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "preserve",
+    "allowJs": true,
+    "checkJs": false,
+    "strict": false,
+    "sourceMap": true,
+    "lib": ["DOM", "ES5", "ES2015.Promise"],
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.vue"],
+  "exclude": ["node_modules", "dist"]
+}
